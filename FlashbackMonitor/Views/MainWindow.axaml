@@ -1,0 +1,117 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:FlashbackMonitor.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="FlashbackMonitor.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="FlashbackMonitor">
+	<Window.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.ThemeDictionaries>
+				<ResourceDictionary x:Key='Dark'>
+					<Color x:Key="BorderColor">#FFFFFFFF</Color>
+					<Color x:Key="Foreground">#c84875</Color>
+					<Color x:Key="TopicForeground">#a684f2</Color>
+				</ResourceDictionary>
+			</ResourceDictionary.ThemeDictionaries>
+		</ResourceDictionary>
+	</Window.Resources>
+
+	<Design.DataContext>
+		<vm:MainWindowViewModel/>
+	</Design.DataContext>
+
+	<Grid RowDefinitions="*, 20" ColumnDefinitions="*">
+		
+		<TabControl Grid.Row="0">
+			<TabItem Header="Flashback Monitor">
+				<Border
+					BorderBrush="Gray"
+					BorderThickness="1"
+					Padding="0 0 10 0"
+					CornerRadius="10"
+					Height="580"
+					Background="#0d0c0c">
+					<!-- Notifications -->
+					<ScrollViewer VerticalScrollBarVisibility="Visible">
+						<ItemsControl ItemsSource="{Binding NotificationItems}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<StackPanel Orientation="Horizontal">
+										<TextBlock Text="&#9679;" Foreground="{Binding TopicColor}" Padding="10 5 10 5" />
+										<TextBlock Foreground="Gray" Text="{Binding TopicLastUpdated}" Padding="0 5 10 5" />
+										<TextBlock Text="{Binding UserName}" FontWeight="Bold" Foreground="{DynamicResource Foreground}" Padding="0 5 10 5"></TextBlock>
+										<TextBlock Padding="0 5 0 5">&#10230;</TextBlock>
+										<TextBlock Text="{Binding FavoriteTopic}" Foreground="#f99404" FontSize="18" Padding="10 3 0 5" />
+										<TextBlock Tag="{Binding TopicUrl}" Text="{Binding TopicName}" FontWeight="Bold" PointerPressed="TextBlock_PointerPressed" Foreground="#9c9797" Padding="0 5 10 5" />
+									</StackPanel>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</ScrollViewer>
+				</Border>
+			</TabItem>
+			<!-- Settings -->
+			<TabItem Header="Foruminställningar">
+				<Grid ColumnDefinitions="*,*">
+
+					<StackPanel Grid.Column="0" Orientation="Vertical" Margin="0 25 0 0">
+						<Border
+							BorderBrush="Gray"
+							BorderThickness="1"
+							CornerRadius="10"
+							Height="580"
+							Background="#0d0c0c">
+							<StackPanel Orientation="Vertical">
+								<TextBlock Foreground="Gray" Text="Forum att prenumerera på" FontWeight="Bold" Padding="10 10 0 10" />
+								<StackPanel Orientation="Horizontal" Margin="10 0 0 0">
+									<CheckBox IsChecked="{Binding AllChecked}" />
+									<TextBlock Text="Markera/Avmarkera alla" Padding="10 10 0 0" />
+								</StackPanel>
+
+								<ScrollViewer VerticalScrollBarVisibility="Visible" Height="500">
+									<ItemsControl ItemsSource="{Binding ForumItems}">
+										<ItemsControl.ItemTemplate>
+											<DataTemplate>
+												<StackPanel Orientation="Horizontal">
+													<CheckBox IsChecked="{Binding IsChecked}" Margin="10 10 0 0" />
+													<TextBlock Foreground="Gray" Text="{Binding Name}" Margin="10 20 0 0"></TextBlock>
+												</StackPanel>
+											</DataTemplate>
+										</ItemsControl.ItemTemplate>
+
+									</ItemsControl>
+								</ScrollViewer>
+							</StackPanel>
+						</Border>
+					</StackPanel>
+
+					<StackPanel Orientation="Vertical" Grid.Column="1" Margin="10 25 0 10">
+
+						<StackPanel Orientation="Horizontal">
+							<TextBlock ToolTip.Tip="Här kan du ange specifika trådar du vill prenumerera på. Aviseringar visas när nya inlägg skrivits i tråden, även om du inte prenumererar på det forum tråden tillhör." Foreground="Gray" FontWeight="Bold" Text="Trådar att prenumerera på (1 trådtitel per rad)" Margin="0 10 0 10" />
+						</StackPanel>
+						<TextBox Text="{Binding TopicSubscriptions}" CornerRadius="10" AcceptsReturn="True" Height="200" />
+
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Foreground="#f99404" VerticalAlignment="Center" Margin="0 0 0 0">&#9733;</TextBlock>
+							<TextBlock ToolTip.Tip="En favorittråd visas i en annan färg och med en &#9733; så du lättare ser den i flödet." Foreground="Gray" FontWeight="Bold" Text="Favorittrådar (1 trådtitel per rad)" Margin="10 10 0 10" />
+						</StackPanel>
+						<TextBox Text="{Binding FavoriteTopics}" CornerRadius="10" AcceptsReturn="True" Height="200" />
+
+						<StackPanel Orientation="Horizontal" Margin="10 20 0 10" HorizontalAlignment="Right">
+							<TextBlock FontWeight="Bold" Foreground="Gray" VerticalAlignment="Center" Text="Uppdateringsintervall (sekunder)" Margin="0 0 10 0" />
+							<NumericUpDown Minimum="1" Increment="1" Width="150" Value="{Binding Interval}" />
+						</StackPanel>
+
+						<Button Command="{Binding SaveSettingsCommand}" HorizontalAlignment="Right" Content="SPARA" FontWeight="Bold" Margin="10 10 0 10" />
+					</StackPanel>
+				</Grid>
+			</TabItem>
+		</TabControl>
+		<TextBlock Grid.Row="1" Text="Hämtar data..." IsVisible="{Binding IsLoading}" Margin="20 0 0 10" Foreground="LightGreen" FontWeight="Bold"/>
+	</Grid>
+</Window>
