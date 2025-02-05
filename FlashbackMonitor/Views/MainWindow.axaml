@@ -24,7 +24,7 @@
 		<vm:MainWindowViewModel/>
 	</Design.DataContext>
 
-	<Grid RowDefinitions="*, 20" ColumnDefinitions="*">
+	<Grid RowDefinitions="*, 25" ColumnDefinitions="*">
 		
 		<TabControl Grid.Row="0">
 			<TabItem Header="Flashback Monitor">
@@ -112,6 +112,6 @@
 				</Grid>
 			</TabItem>
 		</TabControl>
-		<TextBlock Grid.Row="1" Text="Hämtar data..." IsVisible="{Binding IsLoading}" Margin="20 0 0 10" Foreground="LightGreen" FontWeight="Bold"/>
+		<TextBlock Grid.Row="1" Text="Hämtar data..." IsVisible="{Binding IsLoading}" Margin="20 0 0 5" Foreground="Silver" FontWeight="Bold"/>
 	</Grid>
 </Window>

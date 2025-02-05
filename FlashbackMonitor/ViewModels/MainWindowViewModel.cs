@@ -23,7 +23,6 @@ namespace FlashbackMonitor.ViewModels
             get => _isLoading;
             set => this.RaiseAndSetIfChanged(ref _isLoading, value);
         }
-        public string FlashbackMonitorText { get; set; } = "Fl";
 
         public bool ApplySettings { get; set; } = true;
         public ObservableCollection<NotificationViewModel> NotificationItems { get; } = [];
@@ -120,7 +119,9 @@ namespace FlashbackMonitor.ViewModels
                         item1 => item1.Index,
                         item2 => item2.Index,
                         (item1, item2) => new { item1, item2 })
-                .Where(x => x.item1.TopicLastUpdated != x.item2.TopicLastUpdated || x.item1.TopicName != x.item2.TopicName || x.item1.UserName != x.item2.UserName).Select(x => x.item1)
+                .Where(x => x.item1.TopicLastUpdated != x.item2.TopicLastUpdated || x.item1.TopicName != x.item2.TopicName || x.item1.UserName != x.item2.UserName)
+                    .OrderBy(x => x.item1.TopicLastUpdatedDateTime)
+                    .Select(x => x.item1)
                 .ToList();
 
             if (newItems.Count > 0)

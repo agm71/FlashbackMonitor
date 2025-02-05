@@ -1,5 +1,4 @@
-﻿using HtmlAgilityPack;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -16,8 +15,6 @@ namespace FlashbackMonitor.Services
 
         public async Task<List<FlashbackDataItem>> GetFlashbackDataAsync()
         {
-            var rnd = new Random();
-
             var html = string.Empty;
         makeRequest:
             using (var client = new HttpClient())
@@ -39,6 +36,7 @@ namespace FlashbackMonitor.Services
 
             if (matches.Count != ForumsCount)
             {
+                await Task.Delay(3000);
                 goto makeRequest;
             }
 
