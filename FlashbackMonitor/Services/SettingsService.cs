@@ -9,7 +9,7 @@ namespace FlashbackMonitor.Services
 {
     public class SettingsService : ISettingsService
     {
-        private readonly string SettingsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "FlashbackMonitor.json");
+        private readonly string SettingsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "FlashbackMonitorSettings.json");
 
         private async Task CreateSettingsFile()
         {
@@ -17,13 +17,12 @@ namespace FlashbackMonitor.Services
             {
                 Forums = [],
                 Topics = [],
-                Interval = 30
+                Users = [],
+                Interval = 10
             };
 
-            using (FileStream fs = new(SettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                await JsonSerializer.SerializeAsync(fs, defaultSettings);
-            }
+            using FileStream fs = new(SettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            await JsonSerializer.SerializeAsync(fs, defaultSettings);
         }
 
         public async Task<Settings> GetSettingsAsync()
@@ -36,9 +35,7 @@ namespace FlashbackMonitor.Services
             }
 
             using (FileStream fs = new(SettingsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                settings = await JsonSerializer.DeserializeAsync<Settings>(fs);
-            }
+            settings = await JsonSerializer.DeserializeAsync<Settings>(fs);
 
             return settings;
         }
@@ -48,8 +45,8 @@ namespace FlashbackMonitor.Services
             Settings settings = new()
             {
                 Forums = viewModel.ForumItems.Where(x => x.IsChecked).Select(x => x.Name).ToList(),
-                Topics = [.. viewModel.TopicSubscriptions.Split([Environment.NewLine], StringSplitOptions.None)],
-                FavoriteTopics = [.. viewModel.FavoriteTopics.Split([Environment.NewLine], StringSplitOptions.None)],
+                Topics = [.. viewModel.Topics.Where(t => !string.IsNullOrWhiteSpace(t.TopicName))],
+                Users = [.. viewModel.Users.Where(u => !string.IsNullOrWhiteSpace(u.UserName))],
                 Interval = viewModel.Interval
             };
 

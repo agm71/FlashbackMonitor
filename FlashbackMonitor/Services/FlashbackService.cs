@@ -1,25 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 
 namespace FlashbackMonitor.Services
 {
-    public class FlashbackService : IFlashbackService
+    public partial class FlashbackService : IFlashbackService
     {
         private const string FlashbackBaseUrl = "https://www.flashback.org/";
         private const int ForumsCount = 140;
 
-        public async Task<List<FlashbackDataItem>> GetFlashbackDataAsync()
+        public async Task<IEnumerable<FlashbackDataItem>> GetFlashbackDataAsync()
         {
             var html = string.Empty;
         makeRequest:
             using (var client = new HttpClient())
             {
-
                 try
                 {
                     var response = await client.GetAsync($"{FlashbackBaseUrl}");
@@ -32,7 +31,7 @@ namespace FlashbackMonitor.Services
                 }
             }
 
-            var matches = Regex.Matches(html, "(?:(?:<span class=\"fa fa-circle\" style=\"color:)(?<Color>.*?)\">(?:</span>)(?:.|\\s)*?)?^(?:forumslist.|\\s*?<a href=\")(?<ForumUrl>.+?)\"(?:\\s.*?<strong>)(?<ForumName>.*?)</strong>(?:.|\\s)*?(?:<strong>\\s*?<a href=\")(?<TopicUrl>.*?)\"\\s.*?title.*?>(?<TopicName>.*?)</a>(?:.|\\s)*?av\\s<a href=.*?>(?<UserName>.*?)</a>\\s(?<Time>.*?)\\s*?</div>", RegexOptions.Multiline).ToList();
+            var matches = FlashbackRegexes.StartPageRegex().Matches(html).ToList();
 
             if (matches.Count != ForumsCount)
             {

@@ -5,6 +5,6 @@ namespace FlashbackMonitor.Services
 {
     public interface IFlashbackService
     {
-        Task<List<FlashbackDataItem>> GetFlashbackDataAsync();
+        Task<IEnumerable<FlashbackDataItem>> GetFlashbackDataAsync();
     }
 }

@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using FlashbackMonitor.Services;
@@ -19,11 +20,15 @@ namespace FlashbackMonitor
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                var mainWindow = new MainWindow();
-                mainWindow.CanResize = false;
-                mainWindow.Width = 900;
-                mainWindow.Height = 700;
+                var mainWindow = new MainWindow
+                {
+                    CanResize = false,
+                    Width = 900,
+                    Height = 700,
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen
+                };
                 mainWindow.Show();
+
 #pragma warning disable CS4014
                 InitializeDataAsync(mainWindow);
 #pragma warning restore CS4014
@@ -32,7 +37,7 @@ namespace FlashbackMonitor
             base.OnFrameworkInitializationCompleted();
         }
 
-        private async Task InitializeDataAsync(MainWindow mainWindow)
+        private static async Task InitializeDataAsync(MainWindow mainWindow)
         {
             var flashbackService = new FlashbackService();  
             var settingsService = new SettingsService();

@@ -2,16 +2,19 @@
 
 namespace FlashbackMonitor.ViewModels
 {
-    public class ForumViewModel : ViewModelBase
+    public class ForumViewModel(MainWindowViewModel mainWindowViewModel) : ViewModelBase
     {
-        private bool _isChecked;
-
         public string Name { get; set; }
         public string ForumColor { get; set; }
+
+        private bool _isChecked;
         public bool IsChecked
         {
             get => _isChecked;
-            set => this.RaiseAndSetIfChanged(ref _isChecked, value);
+            set {
+                this.RaiseAndSetIfChanged(ref _isChecked, value);
+                mainWindowViewModel.RaiseNotificationForAllChecked();
+            }
         }
     }
 }
