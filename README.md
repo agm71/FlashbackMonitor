@@ -1,6 +1,6 @@
 Flashback Monitor pollar Flashback för att visa de senaste inläggen.
 
-Appen är fortfarande under utveckling.
+Appen är fortfarande under utveckling och förbättras allteftersom.
 
 ![fbmonitor2 0_1](https://github.com/user-attachments/assets/2460dd0f-3b3f-415d-aaaf-b2f8202a3588)
 
