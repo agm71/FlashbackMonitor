@@ -11,7 +11,7 @@ namespace FlashbackMonitor.Services
     {
         private readonly string SettingsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "FlashbackMonitorSettings.json");
 
-        private async Task CreateSettingsFile()
+        private async Task CreateSettingsFileAsync()
         {
             Settings defaultSettings = new()
             {
@@ -31,7 +31,7 @@ namespace FlashbackMonitor.Services
 
             if (!File.Exists(SettingsFilePath))
             {
-                await CreateSettingsFile();
+                await CreateSettingsFileAsync();
             }
 
             using (FileStream fs = new(SettingsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -52,6 +52,49 @@ namespace FlashbackMonitor.Services
 
             using FileStream fs = new(SettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
             await JsonSerializer.SerializeAsync(fs, settings);
+        }
+
+        public void SaveSettings(MainWindowViewModel viewModel)
+        {
+            Settings settings = new()
+            {
+                Forums = viewModel.ForumItems.Where(x => x.IsChecked).Select(x => x.Name).ToList(),
+                Topics = [.. viewModel.Topics.Where(t => !string.IsNullOrWhiteSpace(t.TopicName))],
+                Users = [.. viewModel.Users.Where(u => !string.IsNullOrWhiteSpace(u.UserName))],
+                Interval = viewModel.Interval
+            };
+
+            using FileStream fs = new(SettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            JsonSerializer.Serialize(fs, settings);
+        }
+
+        private void CreateSettingsFile()
+        {
+            Settings defaultSettings = new()
+            {
+                Forums = [],
+                Topics = [],
+                Users = [],
+                Interval = 10
+            };
+
+            using FileStream fs = new(SettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
+            JsonSerializer.Serialize(fs, defaultSettings);
+        }
+
+        public Settings GetSettings()
+        {
+            Settings settings = new();
+
+            if (!File.Exists(SettingsFilePath))
+            {
+                CreateSettingsFile();
+            }
+
+            using (FileStream fs = new(SettingsFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                settings = JsonSerializer.Deserialize<Settings>(fs);
+
+            return settings;
         }
     }
 }

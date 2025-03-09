@@ -42,6 +42,7 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.1" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,5 +58,14 @@
     <AvaloniaResource Update="Assets\new.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AvaloniaResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="UserControls\MainUserControl.axaml.cs">
+      <DependentUpon>MainUserControl.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="UserControls\TopicUserControl.axaml.cs">
+      <DependentUpon>TopicUserControl.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

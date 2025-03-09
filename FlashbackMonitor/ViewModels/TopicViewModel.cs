@@ -17,7 +17,10 @@ namespace FlashbackMonitor.ViewModels
         public bool IsFavoriteTopic
         {
             get => _isFavoriteTopic;
-            set => this.RaiseAndSetIfChanged(ref _isFavoriteTopic, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _isFavoriteTopic, value);
+            }
         }
     }
 }

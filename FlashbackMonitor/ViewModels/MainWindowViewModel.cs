@@ -8,24 +8,119 @@ using System.Data;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using System.Timers;
+using System.Web;
 using System.Windows.Input;
 
 namespace FlashbackMonitor.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public bool ApplySettings { get; set; } = true;
-        public ObservableCollection<NotificationViewModel> NotificationItems { get; } = [];
+        public ObservableCollection<NotificationViewModel> VisibleNotificationItems { get; set; } = [];
+        public ObservableCollection<NotificationViewModel> AllNotificationItems { get; } = [];
         public ObservableCollection<ForumViewModel> ForumItems { get; } = [];
         public ObservableCollection<UserViewModel> Users { get; set; } = [];
         public ObservableCollection<TopicViewModel> Topics { get; set; } = [];
 
-        private string _updatedText;
-        public string UpdatedText
+        private string _searchText;
+        public string SearchText
         {
-            get => _updatedText;
-            set => this.RaiseAndSetIfChanged(ref _updatedText, value);
+            get => _searchText;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _searchText, value);
+                ApplyFilter();
+            }        
+        }
+
+        private int _selectedTopicIndex = -1;
+        public int SelectedTopicIndex
+        {
+            get => _selectedTopicIndex;
+            set
+            {
+                _selectedTopicIndex = value;              
+                ApplyFilter();
+            }
+        }
+
+        private int _selectedUserIndex = -1;
+        public int SelectedUserIndex
+        {
+            get => _selectedUserIndex;
+            set
+            {
+                _selectedUserIndex = value;
+                ApplyFilter();
+            }
+        }
+
+        public void ApplyFilter()
+        {           
+            var notificationsToShow = Enumerable.Empty<NotificationViewModel>();
+
+            if (SelectedTopicIndex == 0)
+            {
+                notificationsToShow = AllNotificationItems;
+            }
+            else if (SelectedTopicIndex == 1) // Prenumererade trådar
+            {
+                var filteredItems = AllNotificationItems.Where(x => _settings.Topics.Any(t => string.Equals(t.TopicName, x.TopicName, StringComparison.OrdinalIgnoreCase)));
+
+                notificationsToShow = filteredItems;
+            }
+            else if (SelectedTopicIndex == 2) // Prenumererade trådar (favoriter)
+            {
+                var favoriteTopicNotifications = AllNotificationItems.Where(x => _settings.Topics.Any(t => t.IsFavoriteTopic && string.Equals(t.TopicName, x.TopicName, StringComparison.OrdinalIgnoreCase)));
+                notificationsToShow = favoriteTopicNotifications;
+            }
+            else if (SelectedTopicIndex == 3) // Prenumererade forum
+            {
+                var favoriteTopicNotifications = AllNotificationItems.Where(x => _settings.Forums.Any(f => string.Equals(f, x.ForumName, StringComparison.OrdinalIgnoreCase)));
+                notificationsToShow = favoriteTopicNotifications;
+            }
+            else if (SelectedTopicIndex == 4) // Prenumererade forum + prenumererade trådar
+            {
+                var favoriteTopicNotifications = AllNotificationItems.Where(x => _settings.Forums.Any(f => string.Equals(f, x.ForumName, StringComparison.OrdinalIgnoreCase))
+                    || _settings.Topics.Any(t => string.Equals(t.TopicName, x.TopicName, StringComparison.OrdinalIgnoreCase)));
+
+                notificationsToShow = favoriteTopicNotifications;
+            }
+
+            if (SelectedUserIndex == 1) // Favoritanvändare
+            {
+                notificationsToShow = notificationsToShow.Where(x => _settings.Users.Any(u => string.Equals(u.UserName, x.UserName, StringComparison.OrdinalIgnoreCase) && u.Favorite));
+            }
+
+            if (_settings.Users.Any(u => u.VipUser))
+            {
+                notificationsToShow = notificationsToShow.Where(d => _settings.Users.Any(u => string.Equals(u.UserName, d.UserName, StringComparison.OrdinalIgnoreCase) && u.VipUser));
+            }
+            else if (_settings.Users.Any(u => u.IgnoredUser))
+            {
+                notificationsToShow = notificationsToShow.Where(d => _settings.Users.Any(u => !string.Equals(u.UserName, d.UserName, StringComparison.OrdinalIgnoreCase) && u.IgnoredUser));
+            }
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                notificationsToShow = notificationsToShow.Where(x => x.TopicName.ToLowerInvariant().Contains(SearchText.ToLowerInvariant()) || x.UserName.ToLowerInvariant().Contains(SearchText.ToLowerInvariant()));
+            }
+
+            VisibleNotificationItems.Clear();
+            VisibleNotificationItems.AddRange(notificationsToShow);
+        }
+
+        private string _updateStatus;
+        public string UpdateStatus
+        {
+            get => _updateStatus;
+            set => this.RaiseAndSetIfChanged(ref _updateStatus, value);
+        }
+
+        private string _updateStatusDescription;
+        public string UpdateStatusDescription
+        {
+            get => _updateStatusDescription;
+            set => this.RaiseAndSetIfChanged(ref _updateStatusDescription, value);
         }
 
         public bool AllChecked
@@ -40,164 +135,210 @@ namespace FlashbackMonitor.ViewModels
             }
         }
 
-        public int Interval { get; set; }
-
         public void RaiseNotificationForAllChecked()
         {
             this.RaisePropertyChanged(nameof(AllChecked));
         }
 
-        public ICommand SaveSettingsCommand { get; }
-        public ICommand AddUserCommand { get; }
-        public ICommand RemoveUserCommand { get; }
+        public void RaiseNotificationForAllItems(string topicName, bool c)
+        {
+            var x = AllNotificationItems.FirstOrDefault(x => string.Equals(x.TopicName, topicName, StringComparison.OrdinalIgnoreCase));
+            if (x != null)
+            {
+                x.IsFavoriteTopic = c;
+            }
+        }
 
-        private readonly Timer _timer;
+        private int _interval;
+        public int Interval
+        {
+            get => _interval;
+            set => this.RaiseAndSetIfChanged(ref _interval, value); 
+        }
+
+        public ICommand SaveSettingsCommand { get; }
+
         private readonly IFlashbackService _flashbackService;
         private readonly ISettingsService _settingsService;
+
         private IEnumerable<FlashbackDataItem> _fbItems = [];
+        public Settings _settings;
+
+        public int MessageLoadingCount { get; set; } = 1;
+
+        private bool _messageLoadingCountGreaterThanOne;
+        public bool MessageLoadingCountGreaterThanOne
+        {
+            get => _messageLoadingCountGreaterThanOne;
+            set => this.RaiseAndSetIfChanged(ref _messageLoadingCountGreaterThanOne, value);
+        }
+
+        private bool _isError;
+        public bool IsError
+        {
+            get => _isError;
+            set => this.RaiseAndSetIfChanged(ref _isError, value);
+        }
+
+        private string _loadingText;
+        public string LoadingText
+        {
+            get => _loadingText;
+            set => this.RaiseAndSetIfChanged(ref _loadingText, value);
+        }
+
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => this.RaiseAndSetIfChanged(ref _isLoading, value);
+        }
 
         public MainWindowViewModel() { }
 
         public MainWindowViewModel(IFlashbackService flashbackService, ISettingsService settingsService)
         {
             SaveSettingsCommand = ReactiveCommand.CreateFromTask(SaveSettingsAsync);
-            AddUserCommand = ReactiveCommand.Create<string>((userName) => AddUser(userName));
-            RemoveUserCommand = ReactiveCommand.Create<string>((userName) => RemoveUser(userName));
 
             _flashbackService = flashbackService;
             _settingsService = settingsService;
+            _settings = _settingsService.GetSettings();
 
-            _timer = new Timer();
-            _timer.Elapsed += OnTimerElapsed;
-            _timer.AutoReset = true;
-            _timer.Enabled = false;
+            Topics.AddRange(_settings.Topics);
+            Users.AddRange(_settings.Users);
+            Interval = _settings.Interval;
+
+            if (_settings.Topics.Count != 0 && _settings.Topics.Count != 0)
+            {
+                SelectedTopicIndex = 4;
+            }
+            else if (_settings.Topics.Count != 0)
+            {
+                SelectedTopicIndex = 1;
+            }
+            else if (_settings.Forums.Count != 0)
+            {
+                SelectedTopicIndex = 3;
+            }
+            else
+            {
+                SelectedTopicIndex = 0;
+            }
+
+            SelectedUserIndex = 0;
         }
 
         private async Task SaveSettingsAsync()
         {
             await _settingsService.SaveSettingsAsync(this);
-            ApplySettings = true;
+            _settings = await _settingsService.GetSettingsAsync();
+            ApplyFilter();
         }
 
-        private void AddUser(string userName)
+        public async Task LoadDataAsync(bool initial)
         {
-            Users.Add(new()
+        LoadDataAsync:
+            MessageLoadingCount = 1;
+            IsLoading = true;
+            UpdateStatus = HttpUtility.HtmlDecode("&#128993;");
+            UpdateStatusDescription = "Hämtar data";
+
+            IEnumerable<FlashbackDataItem> data;
+
+        getData:
+            try
             {
-                UserName = userName,
-            });
-        }
-
-        private void RemoveUser(string userName)
-        {
-            Users.RemoveMany(Users.Where(x => x.UserName == userName).ToList());
-        }
-
-        private async void OnTimerElapsed(object sender, ElapsedEventArgs e)
-        {
-            await LoadDataAsync(false);
-        }
-
-        public static async Task<MainWindowViewModel> CreateAsync(IFlashbackService flashbackService, ISettingsService settingsService)
-        {
-            var viewModel = new MainWindowViewModel(flashbackService, settingsService);
-            
-            await viewModel.LoadDataAsync(true);
-            
-            return viewModel;
-        }
-
-        public async Task LoadDataAsync(bool firstExecution)
-        {
-            var data = await _flashbackService.GetFlashbackDataAsync();
-            var settings = await _settingsService.GetSettingsAsync();
-
-            if (firstExecution)
+                data = await _flashbackService.GetFlashbackDataAsync();
+            }
+            catch
             {
-                ForumItems.AddRange(data.Select(x => new ForumViewModel(this) { Name = x.ForumName, IsChecked = false, ForumColor = x.ForumColor }));
+                IsError = true;
+                UpdateStatus = HttpUtility.HtmlDecode("&#128992;");
+                UpdateStatusDescription = $"Fel vid datahämtning. Gör försök nummer {++MessageLoadingCount}";
+
+                await Task.Delay(5000);
+               
+                goto getData;
             }
 
-            data = data.OrderByDescending(x => x.TopicLastUpdatedDateTime)
-                .Where(d => settings.Forums.Contains(d.ForumName) || settings.Topics.Exists(x => string.Equals(x.TopicName, d.TopicName, StringComparison.OrdinalIgnoreCase)));
+            _settings = await _settingsService.GetSettingsAsync();
 
-            var newItems = data
-                .Join(_fbItems,
-                        item1 => item1.Index,
-                        item2 => item2.Index,
-                        (item1, item2) => new { item1, item2 })
-                .Where(x => x.item1.TopicLastUpdated != x.item2.TopicLastUpdated || x.item1.TopicName != x.item2.TopicName || x.item1.UserName != x.item2.UserName)
-                    .OrderBy(x => x.item1.TopicLastUpdatedDateTime)
-                    .Select(x => x.item1);
+            data = data.OrderByDescending(x => x.TopicLastUpdatedDateTime);
 
-            if (settings.Users.Any(u => u.VipUser))
+            if (initial)
             {
-                newItems = newItems.Where(d => settings.Users.Any(u => string.Equals(u.UserName, d.UserName, StringComparison.OrdinalIgnoreCase) && u.VipUser));
-            }
-            else if (settings.Users.Any(u => u.IgnoredUser))
-            {
-                newItems = newItems.Where(d => settings.Users.Any(u => !string.Equals(u.UserName, d.UserName, StringComparison.OrdinalIgnoreCase) && u.IgnoredUser));
-            }
-
-            if (newItems.Any())
-            {
-                foreach (var item in newItems)
+                ForumItems.AddRange(data.Select(x => new ForumViewModel(this)
                 {
-                    NotificationItems.Insert(0, new NotificationViewModel
+                    Name = x.ForumName,
+                    IsChecked = _settings.Forums.Exists(s => s == x.ForumName),
+                    ForumColor = x.ForumColor
+                }));
+
+                foreach (var item in data)
+                {
+                    AllNotificationItems.Add(new NotificationViewModel
                     {
                         UserName = item.UserName,
-                        VipUser = settings.Users.Any(u => string.Equals(u.UserName, item.UserName, StringComparison.OrdinalIgnoreCase) && u.VipUser),
-                        IsFavoriteUser = settings.Users.Any(u => string.Equals(u.UserName, item.UserName, StringComparison.OrdinalIgnoreCase) && u.Favorite),
+                        VipUser = _settings.Users.Any(u => string.Equals(u.UserName, item.UserName, StringComparison.OrdinalIgnoreCase) && u.VipUser),
+                        IsFavoriteUser = _settings.Users.Any(u => string.Equals(u.UserName, item.UserName, StringComparison.OrdinalIgnoreCase) && u.Favorite),
                         TopicName = item.TopicName,
                         TopicUrl = item.TopicUrl,
                         TopicLastUpdated = item.TopicLastUpdated,
                         TopicColor = item.ForumColor,
-                        IsFavoriteTopic = settings.Topics.Exists(x => string.Equals(x.TopicName, item.TopicName, StringComparison.OrdinalIgnoreCase) && x.IsFavoriteTopic)
+                        IsFavoriteTopic = _settings.Topics.Exists(x => string.Equals(x.TopicName, item.TopicName, StringComparison.OrdinalIgnoreCase) && x.IsFavoriteTopic),
+                        ForumName = item.ForumName,
+                        Index = item.Index,
                     });
                 }
             }
-            else if (firstExecution)
+            else
             {
-                foreach (var item in (settings.Users.Any(u => u.VipUser) 
-                    ? data.Where(d => settings.Users.Any(u => string.Equals(u.UserName, d.UserName, StringComparison.OrdinalIgnoreCase) && u.VipUser))
-                    : data.Where(d => !settings.Users.Any(u => string.Equals(u.UserName, d.UserName, StringComparison.OrdinalIgnoreCase) && u.IgnoredUser))))
+                var newItems = data
+                    .Join(_fbItems,
+                            item1 => item1.Index,
+                            item2 => item2.Index,
+                            (item1, item2) => new { item1, item2 })
+                    .Where(x => x.item1.TopicLastUpdated != x.item2.TopicLastUpdated || x.item1.TopicName != x.item2.TopicName || x.item1.UserName != x.item2.UserName)
+                        .OrderByDescending(x => x.item1.TopicLastUpdatedDateTime)
+                        .Select(x => x.item1);
+
+                if (newItems.Any())
                 {
-                    NotificationItems.Add(new NotificationViewModel
+                    foreach (var item in newItems)
                     {
-                        UserName = item.UserName,
-                        VipUser = settings.Users.Any(u => string.Equals(u.UserName, item.UserName, StringComparison.OrdinalIgnoreCase) && u.VipUser),
-                        IsFavoriteUser = settings.Users.Any(u => string.Equals(u.UserName, item.UserName, StringComparison.OrdinalIgnoreCase) && u.Favorite),
-                        TopicName = item.TopicName,
-                        TopicUrl = item.TopicUrl,
-                        TopicLastUpdated = item.TopicLastUpdated,
-                        TopicColor = item.ForumColor,
-                        IsFavoriteTopic = settings.Topics.Exists(x => string.Equals(x.TopicName, item.TopicName, StringComparison.OrdinalIgnoreCase) && x.IsFavoriteTopic)
-                    });
-                }
-
-                Topics = new ObservableCollection<TopicViewModel>(settings.Topics);
-                Users = new ObservableCollection<UserViewModel>(settings.Users);
-            }
-
-            if (ApplySettings)
-            {
-                foreach (var forumName in settings.Forums)
-                {
-                    var forum = ForumItems.FirstOrDefault(x => x.Name == forumName);
-
-                    if (forum != null)
-                    {
-                        forum.IsChecked = true;
+                        AllNotificationItems.Insert(0, new NotificationViewModel
+                        {
+                            UserName = item.UserName,
+                            VipUser = _settings.Users.Any(u => string.Equals(u.UserName, item.UserName, StringComparison.OrdinalIgnoreCase) && u.VipUser),
+                            IsFavoriteUser = _settings.Users.Any(u => string.Equals(u.UserName, item.UserName, StringComparison.OrdinalIgnoreCase) && u.Favorite),
+                            TopicName = item.TopicName,
+                            TopicUrl = item.TopicUrl,
+                            TopicLastUpdated = item.TopicLastUpdated,
+                            TopicColor = item.ForumColor,
+                            IsFavoriteTopic = _settings.Topics.Exists(x => string.Equals(x.TopicName, item.TopicName, StringComparison.OrdinalIgnoreCase) && x.IsFavoriteTopic),
+                            ForumName = item.ForumName,
+                            Index = item.Index,
+                        });
                     }
                 }
-
-                Interval = settings.Interval;
-                _timer.Interval = settings.Interval * 1000;
-                _timer.Enabled = true;
-                ApplySettings = false;
             }
 
             _fbItems = data;
 
-            UpdatedText = $"Uppdaterad: {DateTime.Now}";
+            ApplyFilter();
+
+            UpdateStatus = HttpUtility.HtmlDecode("&#128994;");
+            UpdateStatusDescription = $"Uppdaterad: {DateTime.Now}";
+
+            IsLoading = false;
+
+            IsError = false;
+
+            initial = false;
+
+            await Task.Delay(Interval * 1000);
+
+            goto LoadDataAsync;
         }
     }
 }

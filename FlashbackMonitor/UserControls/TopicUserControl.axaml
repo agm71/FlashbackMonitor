@@ -1,0 +1,196 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:FlashbackMonitor.ViewModels"
+			 xmlns:local="using:FlashbackMonitor.Converters"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="450"
+			 x:DataType="vm:TopicUserControlViewModel"
+			 xmlns:local2="clr-namespace:FlashbackMonitor;assembly=FlashbackMonitor"
+			 xmlns:monitor="clr-namespace:FlashbackMonitor.Services;assembly=FlashbackMonitor"
+             x:Class="FlashbackMonitor.TopicUserControl">
+	<UserControl.Resources>
+		<ResourceDictionary>
+			<local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+		</ResourceDictionary>
+	</UserControl.Resources>
+	<Grid RowDefinitions="Auto,*">
+		<StackPanel Grid.Row="0">
+			<DockPanel Margin="20">
+				<Image DockPanel.Dock="Left" VerticalAlignment="Center" Source="avares://FlashbackMonitor/Assets/backyellow.png" Width="32" Height="32" PointerPressed="BackImage_PointerPressed" Cursor="Hand" />
+				<TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="20 0 0 0" Text="{Binding TopicPage.TopicName}" FontSize="18" Foreground="#d3cece" TextWrapping="Wrap" />
+				<TextBlock DockPanel.Dock="Left" Text="{Binding LoadingText}" IsVisible="{Binding IsLoading}" VerticalAlignment="Center" Margin="10 0 0 0" />
+				<ComboBox SelectedIndex="{Binding SelectedPageIndex}" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding TopicPage.Pages}" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+			</DockPanel>
+			<Separator Background="#cc9d42" Height="5" Margin="22 0 22 10"/>
+		</StackPanel>
+		<ScrollViewer x:Name="SV" VerticalScrollBarVisibility="Visible" VerticalAlignment="Top" Grid.Row="1">
+		<ItemsControl Name="postitems" ItemsSource="{Binding TopicPage.PostItems}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<Grid ColumnDefinitions="180, *" RowDefinitions="*,*">
+						<StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Background="#0a0a0a" Margin="20 0 20 20">
+							<TextBlock Text="{Binding PostDate}" Padding="5" Foreground="Gray"/>
+						</StackPanel>
+						<StackPanel Width="170" Orientation="Vertical" Grid.Row="1" Grid.Column="0" MinHeight="100">
+							<TextBlock Text="{Binding Author}" Foreground="#cc9d42" Padding="20 0 0 0" FontSize="13" />
+							<TextBlock Text="{Binding UserRegistration}" Padding="20 0 0 0" FontSize="13" />
+							<TextBlock Text="{Binding UserPosts}" Padding="20 0 0 0" FontSize="13" />
+						</StackPanel>
+						<StackPanel Grid.Row="1" Grid.Column="1" Margin="0 0 20 20">
+							<ItemsControl ItemsSource="{Binding TextContainers}">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Border Margin="0 0 0 0" Padding="0">
+											<StackPanel Width="670">
+												<ItemsControl ItemsSource="{Binding TextItems}">
+													<ItemsControl.ItemsPanel>
+														<ItemsPanelTemplate>
+															<WrapPanel Orientation="Horizontal" Width="670" />
+														</ItemsPanelTemplate>
+													</ItemsControl.ItemsPanel>
+													<ItemsControl.ItemTemplate>
+														<DataTemplate>
+															<WrapPanel Orientation="Horizontal">
+																<local2:FlashbackTextBlock TextKind="{Binding Kind}" Text="{Binding Text}" AdditionalData="{Binding AdditionalData}" TextWrapping="Wrap" FontSize="13" />
+																<ItemsControl ItemsSource="{Binding QuoteContainerCollections}">
+																	<ItemsControl.ItemsPanel>
+																		<ItemsPanelTemplate>
+																			<StackPanel Orientation="Vertical" />
+																		</ItemsPanelTemplate>
+																	</ItemsControl.ItemsPanel>
+																	<ItemsControl.ItemTemplate>
+																		<DataTemplate>
+																			<Border BorderBrush="Gray" BorderThickness="1" Background="#0a0a0a" Width="670" Padding="10" Margin="0 0 0 20">
+																				<StackPanel Background="#0a0a0a">
+																					<StackPanel Background="#0a0a0a" IsVisible="{Binding UserName, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='UserName'}">
+																						<TextBlock Background="#0a0a0a" Text="Ursprungligen postat av " FontSize="13">
+																							<Run Text="{Binding UserName}" Foreground="#cc9d42" FontSize="13"/>
+																						</TextBlock>
+																					</StackPanel>
+																					<ItemsControl ItemsSource="{Binding QuoteContainers}">
+																						<ItemsControl.ItemsPanel>
+																							<ItemsPanelTemplate>
+																								<WrapPanel Orientation="Horizontal" Width="650" />
+																							</ItemsPanelTemplate>
+																						</ItemsControl.ItemsPanel>
+																						<ItemsControl.ItemTemplate>
+																							<DataTemplate>
+																								<StackPanel Orientation="Horizontal">
+																									<ItemsControl ItemsSource="{Binding QuoteTextItems}">
+																										<ItemsControl.ItemsPanel>
+																											<ItemsPanelTemplate>
+																												<WrapPanel Orientation="Horizontal" Width="650" />
+																											</ItemsPanelTemplate>
+																										</ItemsControl.ItemsPanel>
+																										<ItemsControl.ItemTemplate>
+																											<DataTemplate>
+																												<StackPanel>
+																												<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}" TextWrapping="Wrap" FontSize="13" />
+																												<ItemsControl ItemsSource="{Binding SpoilerContainerCollections}">
+																													<ItemsControl.ItemTemplate>
+																														<DataTemplate>
+																															<Border BorderBrush="Green" BorderThickness="1" Background="Black" Width="630" Padding="10" Margin="10 0 0 10">
+																																<StackPanel Background="Black">
+																																	<StackPanel Background="Black">
+																																		<TextBlock Background="Black" Text="SPOILER" Foreground="Red"/>
+																																	</StackPanel>
+																																	<ItemsControl ItemsSource="{Binding SpoilerContainers}">
+																																		<ItemsControl.ItemsPanel>
+																																			<ItemsPanelTemplate>
+																																				<WrapPanel Orientation="Horizontal" Width="610" />
+																																			</ItemsPanelTemplate>
+																																		</ItemsControl.ItemsPanel>
+																																		<ItemsControl.ItemTemplate>
+																																			<DataTemplate>
+																																				<StackPanel Orientation="Horizontal">
+																																					<ItemsControl ItemsSource="{Binding SpoilerTextItems}">
+																																						<ItemsControl.ItemsPanel>
+																																							<ItemsPanelTemplate>
+																																								<WrapPanel Orientation="Horizontal" Width="610" />
+																																							</ItemsPanelTemplate>
+																																						</ItemsControl.ItemsPanel>
+																																						<ItemsControl.ItemTemplate>
+																																							<DataTemplate>
+																																								<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}" FontSize="13"/>
+																																							</DataTemplate>
+																																						</ItemsControl.ItemTemplate>
+																																					</ItemsControl>
+																																				</StackPanel>
+																																			</DataTemplate>
+																																		</ItemsControl.ItemTemplate>
+																																	</ItemsControl>
+																																</StackPanel>
+																															</Border>
+																														</DataTemplate>
+																													</ItemsControl.ItemTemplate>
+																												</ItemsControl>
+																												</StackPanel>
+																											</DataTemplate>
+																										</ItemsControl.ItemTemplate>
+																									</ItemsControl>
+																								</StackPanel>
+																							</DataTemplate>
+																						</ItemsControl.ItemTemplate>
+																					</ItemsControl>
+																				</StackPanel>
+																			</Border>
+																		</DataTemplate>
+																	</ItemsControl.ItemTemplate>
+																</ItemsControl>
+																<ItemsControl ItemsSource="{Binding SpoilerContainerCollections}">
+																	<ItemsControl.ItemTemplate>
+																		<DataTemplate>
+																			<Border BorderBrush="Red" BorderThickness="1" Background="Black" Width="670" Padding="10" Margin="0 0 0 20">
+																				<StackPanel Background="Black">
+																					<StackPanel Background="Black">
+																							<TextBlock Background="Black" Text="SPOILER" Foreground="Red"/>
+																					</StackPanel>
+																					<ItemsControl ItemsSource="{Binding SpoilerContainers}">
+																						<ItemsControl.ItemsPanel>
+																							<ItemsPanelTemplate>
+																								<WrapPanel Orientation="Horizontal" Width="650" />
+																							</ItemsPanelTemplate>
+																						</ItemsControl.ItemsPanel>
+																						<ItemsControl.ItemTemplate>
+																							<DataTemplate>
+																								<StackPanel Orientation="Horizontal">
+																									<ItemsControl ItemsSource="{Binding SpoilerTextItems}">
+																										<ItemsControl.ItemsPanel>
+																											<ItemsPanelTemplate>
+																												<WrapPanel Orientation="Horizontal" Width="650" />
+																											</ItemsPanelTemplate>
+																										</ItemsControl.ItemsPanel>
+																										<ItemsControl.ItemTemplate>
+																											<DataTemplate>
+																												<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}" FontSize="13" />
+																											</DataTemplate>
+																										</ItemsControl.ItemTemplate>
+																									</ItemsControl>
+																								</StackPanel>
+																							</DataTemplate>
+																						</ItemsControl.ItemTemplate>
+																					</ItemsControl>
+
+																				</StackPanel>
+																			</Border>
+																		</DataTemplate>
+																	</ItemsControl.ItemTemplate>
+																</ItemsControl>
+															</WrapPanel>
+														</DataTemplate>
+													</ItemsControl.ItemTemplate>
+												</ItemsControl>
+											</StackPanel>
+										</Border>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</StackPanel>
+					</Grid>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</ScrollViewer>
+	</Grid>
+</UserControl>

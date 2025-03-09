@@ -7,7 +7,6 @@ namespace FlashbackMonitor
 {
     public class ViewLocator : IDataTemplate
     {
-
         public Control Build(object param)
         {
             if (param is null)

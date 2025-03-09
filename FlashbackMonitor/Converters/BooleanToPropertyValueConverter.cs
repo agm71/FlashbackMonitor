@@ -1,5 +1,6 @@
 ﻿using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
+using FlashbackMonitor.Services;
 using System;
 using System.Globalization;
 
@@ -10,6 +11,18 @@ namespace FlashbackMonitor.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string type = parameter as string;
+
+            if (value is TextKind textKind)
+            {
+                if (textKind == TextKind.Italic)
+                {
+                    return "Italic";
+                }
+                else if (textKind == TextKind.Bold)
+                {
+                    return "Bold";
+                }
+            }
 
             if (value is bool boolean)
             {
@@ -33,7 +46,7 @@ namespace FlashbackMonitor.Converters
                             : "Gray";
                     case "forumname":
                         return boolean
-                            ? "#e25fe4"
+                            ? "#cc9d42"
                             : "Gray";
                 }
             }

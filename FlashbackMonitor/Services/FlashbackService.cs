@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FlashbackMonitor.Utils;
+using HtmlAgilityPack;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,35 +10,32 @@ using System.Web;
 
 namespace FlashbackMonitor.Services
 {
-    public partial class FlashbackService : IFlashbackService
+    public class FlashbackService : IFlashbackService
     {
         private const string FlashbackBaseUrl = "https://www.flashback.org/";
         private const int ForumsCount = 140;
 
+#pragma warning disable CS1998
         public async Task<IEnumerable<FlashbackDataItem>> GetFlashbackDataAsync()
+#pragma warning restore CS1998
         {
             var html = string.Empty;
-        makeRequest:
+
             using (var client = new HttpClient())
             {
-                try
-                {
-                    var response = await client.GetAsync($"{FlashbackBaseUrl}");
-                    html = await response.Content.ReadAsStringAsync();
-                }
-                catch
-                {
-                    await Task.Delay(3000);
-                    goto makeRequest;
-                }
+                // För lokal testning
+                // html = File.ReadAllText(@"c:\tmp\fb.html");
+
+                // För prod
+                var response = await client.GetAsync($"{FlashbackBaseUrl}");
+                html = await response.Content.ReadAsStringAsync();
             }
 
             var matches = FlashbackRegexes.StartPageRegex().Matches(html).ToList();
 
             if (matches.Count != ForumsCount)
             {
-                await Task.Delay(3000);
-                goto makeRequest;
+                throw new Exception();
             }
 
             List<FlashbackDataItem> items = [];
@@ -49,7 +48,7 @@ namespace FlashbackMonitor.Services
                     TopicName = HttpUtility.HtmlDecode(matches[i].Groups["TopicName"].Value),
                     TopicUrl = $"{FlashbackBaseUrl}{matches[i].Groups["TopicUrl"].Value}",
                     UserName = HttpUtility.HtmlDecode(matches[i].Groups["UserName"].Value),
-                    TopicLastUpdated = HttpUtility.HtmlDecode(matches[i].Groups["Time"].Value),
+                    TopicLastUpdated = HttpUtility.HtmlDecode(matches[i].Groups["Time"].Value).Substring(0, 10),
                     TopicLastUpdatedDateTime = ToDateTime(HttpUtility.HtmlDecode(matches[i].Groups["Time"].Value)),
                     ForumColor = string.IsNullOrWhiteSpace(matches[i].Groups["Color"].Value) ? items[^1].ForumColor : matches[i].Groups["Color"].Value
                 });
@@ -73,6 +72,23 @@ namespace FlashbackMonitor.Services
             }
 
             return DateTime.Parse(d);
+        }
+
+#pragma warning disable CS1998
+        public async Task<TopicPage> GetTopicPageAsync(string topicUrl)
+#pragma warning restore CS1998
+        {
+            // Lokal testning
+            //var doc = new HtmlDocument();
+            //doc.Load(@"c:\tmp\fbtopicpage.html");
+
+            // Prod
+            HtmlWeb web = new HtmlWeb();
+            var doc = await web.LoadFromWebAsync(topicUrl);
+
+            var topicPage = FlashbackParser.ParseTopicsPage(doc);
+
+            return topicPage;
         }
     }
 }
