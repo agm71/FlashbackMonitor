@@ -2,6 +2,6 @@ Flashback Monitor pollar Flashback för att visa de senaste inläggen.
 
 Appen är fortfarande under utveckling och förbättras allteftersom.
 
-![fbmonitor2 0_1](https://github.com/user-attachments/assets/2460dd0f-3b3f-415d-aaaf-b2f8202a3588)
+![fb201 - Copy](https://github.com/user-attachments/assets/839b393e-8fcf-487e-b06b-c024add7f75d)
 
-![fbmonitor2 0_2](https://github.com/user-attachments/assets/1db13759-5999-42bb-9af6-88e7f03cee91)
+![fb201_2 - Copy](https://github.com/user-attachments/assets/b2c40a32-5b16-4033-95de-520732c30cf1)
