@@ -1,9 +1,13 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.LogicalTree;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 using FlashbackMonitor.Services;
 using FlashbackMonitor.ViewModels;
 using System;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace FlashbackMonitor;
 
@@ -136,5 +140,47 @@ public partial class TopicUserControl : UserControl
         ViewModel.TopicUrl = url;
 
         await ViewModel.InitializeAsync();
+
+        var scrollViewer = this.FindControl<ScrollViewer>("SV");
+        scrollViewer.ScrollToHome();
+    }
+
+    private void SpoilerButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var button = sender as Button;
+        var parentStackPanel = button.GetVisualParent() as StackPanel;
+        var itemsControl = GetNextSibling(parentStackPanel);
+        
+        if (itemsControl != null)
+        {
+            itemsControl.IsVisible = !itemsControl.IsVisible;
+        }
+    }
+
+    private Visual GetNextSibling(Visual element)
+    {
+        var parent = element.GetVisualParent();
+
+        if (parent == null)
+            return null;
+
+        var children = parent.GetVisualChildren();
+
+        bool foundElement = false;
+
+        foreach (var child in children)
+        {
+            if (foundElement)
+            {
+                return child; // Return the next sibling
+            }
+
+            if (child == element)
+            {
+                foundElement = true;
+            }
+        }
+
+        return null;
     }
 }

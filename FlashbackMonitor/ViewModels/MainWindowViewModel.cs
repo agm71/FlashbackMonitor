@@ -263,8 +263,6 @@ namespace FlashbackMonitor.ViewModels
 
             _settings = await _settingsService.GetSettingsAsync();
 
-            data = data.OrderByDescending(x => x.TopicLastUpdatedDateTime);
-
             if (initial)
             {
                 ForumItems.AddRange(data.Select(x => new ForumViewModel(this)
@@ -273,7 +271,12 @@ namespace FlashbackMonitor.ViewModels
                     IsChecked = _settings.Forums.Exists(s => s == x.ForumName),
                     ForumColor = x.ForumColor
                 }));
+            }
 
+            data = data.OrderByDescending(x => x.TopicLastUpdatedDateTime);
+
+            if (initial)
+            {
                 foreach (var item in data)
                 {
                     AllNotificationItems.Add(new NotificationViewModel

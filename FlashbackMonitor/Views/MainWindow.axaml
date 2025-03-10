@@ -13,7 +13,7 @@
 		<SolidColorBrush Color="#111111" />
 	</Window.Background>
 	<Window.Foreground>
-		<SolidColorBrush Color="#838589" />
+		<SolidColorBrush Color="#bbb" />
 	</Window.Foreground>
 	<Window.Resources>
 		<ResourceDictionary>

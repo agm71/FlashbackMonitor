@@ -73,6 +73,11 @@ public partial class MainUserControl : UserControl
         
         if (topic != null)
         {
+            foreach (var t in viewModel.AllNotificationItems.Where(x => x.TopicName == topicName))
+            {
+                t.IsFavoriteTopic = false;
+            }
+
             viewModel.Topics.Remove(topic);
         }
 
