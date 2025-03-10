@@ -307,7 +307,7 @@ namespace FlashbackMonitor.ViewModels
 
                 if (newItems.Any())
                 {
-                    foreach (var item in newItems)
+                    foreach (var item in newItems.OrderBy(x => x.TopicLastUpdatedDateTime))
                     {
                         AllNotificationItems.Insert(0, new NotificationViewModel
                         {
