@@ -145,7 +145,7 @@ public partial class TopicUserControl : UserControl
         scrollViewer.ScrollToHome();
     }
 
-    private void SpoilerButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void SpoilerButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         var button = sender as Button;
         var parentStackPanel = button.GetVisualParent() as StackPanel;
@@ -172,7 +172,7 @@ public partial class TopicUserControl : UserControl
         {
             if (foundElement)
             {
-                return child; // Return the next sibling
+                return child;
             }
 
             if (child == element)

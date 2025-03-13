@@ -5,10 +5,24 @@ using System.Collections.ObjectModel;
 
 namespace FlashbackMonitor.Services
 {
+    #region Interfaces
+    public interface ITextContainer
+    {
+        List<ITextItem> TextItems { get; set; }
+    }
+
+    public interface ITextItem
+    {
+        string Text { get; set; }
+        TextKind Kind { get; set; }
+        string AdditionalData { get; set; }
+        List<QuoteContainerCollection> QuoteContainerCollections { get; set; }
+        List<SpoilerContainerCollection> SpoilerContainerCollections { get; set; }
+    }
+    #endregion
+
     public class TopicPage : ViewModelBase
     {
-        public ObservableCollection<FlashbackPostItem> PostItems { get; set; } = [];
-
         private string _topicName;
         public string TopicName
         {
@@ -16,13 +30,16 @@ namespace FlashbackMonitor.Services
             set => this.RaiseAndSetIfChanged(ref _topicName, value);
         }
 
+        public List<string> PageNumbers { get; set; } = [];
+
         public int _currentPage;
         public int CurrentPage
         {
             get => _currentPage;
             set => this.RaiseAndSetIfChanged(ref _currentPage, value);
         }
-        public List<string> Pages { get; set; } = [];
+
+        public ObservableCollection<FlashbackPostItem> PostItems { get; set; } = [];
     }
 
     public class FlashbackPostItem
@@ -31,11 +48,10 @@ namespace FlashbackMonitor.Services
         public string UserRegistration { get; set; }
         public string UserPosts { get; set; }
         public string PostDate { get; set; }
-        public List<TextItem> TextItems { get; set; } = [];
-        public List<TextContainer> TextContainers { get; set; } = [];
+        public List<ITextContainer> TextContainers { get; set; } = [];
     }
 
-    public class TextItem
+    public class TextItem : ITextItem
     {
         public string Text { get; set; }
         public TextKind Kind { get; set; }
@@ -47,43 +63,45 @@ namespace FlashbackMonitor.Services
     public class QuoteContainerCollection
     {
         public string UserName { get; set; }
-        public List<QuoteContainer> QuoteContainers { get; set; } = [];
+        public List<ITextContainer> QuoteContainers { get; set; } = [];
     }
 
     public class SpoilerContainerCollection
     {
-        public List<SpoilerContainer> SpoilerContainers { get; set; } = [];
+        public List<ITextContainer> SpoilerContainers { get; set; } = [];
     }
 
-    public class QuoteContainer
+    public class QuoteTextContainer : ITextContainer
     {
-        public List<QuoteTextItem> QuoteTextItems { get; set; } = [];
+        public List<ITextItem> TextItems { get; set; } = [];
     }
 
-    public class TextContainer
+    public class TextContainer : ITextContainer
     {
-        public List<TextItem> TextItems { get; set; } = [];
+        public List<ITextItem> TextItems { get; set; } = [];
     }
 
-    public class QuoteTextItem
+    public class QuoteTextItem : ITextItem
     {
         public string Text { get; set; }
         public TextKind Kind { get; set; }
         public string AdditionalData { get; set; }
-        public List<SpoilerContainer> Spoilers { get; set; } = [];
         public List<SpoilerContainerCollection> SpoilerContainerCollections { get; set; } = [];
+        public List<QuoteContainerCollection> QuoteContainerCollections { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     }
 
-    public class SpoilerContainer
+    public class SpoilerTextContainer : ITextContainer
     {
-        public List<SpoilerTextItem> SpoilerTextItems { get; set; } = [];
+        public List<ITextItem> TextItems { get; set; } = [];
     }
 
-    public class SpoilerTextItem
+    public class SpoilerTextItem : ITextItem
     {
         public string Text { set; get; }
         public TextKind Kind { get; set; }
         public string AdditionalData { get; set; }
+        public List<QuoteContainerCollection> QuoteContainerCollections { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public List<SpoilerContainerCollection> SpoilerContainerCollections { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     }
 
     public enum TextKind
@@ -92,6 +110,7 @@ namespace FlashbackMonitor.Services
         Link,
         Italic,
         Bold,
-        LineBreak
+        LineBreak,
+        Bullet
     }
 }

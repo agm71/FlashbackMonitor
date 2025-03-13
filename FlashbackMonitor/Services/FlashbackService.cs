@@ -24,7 +24,7 @@ namespace FlashbackMonitor.Services
             using (var client = new HttpClient())
             {
                 // För lokal testning
-                // html = File.ReadAllText(@"c:\tmp\fb.html");
+                //html = File.ReadAllText(@"c:\tmp\fb.html");
 
                 // För prod
                 var response = await client.GetAsync($"{FlashbackBaseUrl}");
@@ -50,7 +50,8 @@ namespace FlashbackMonitor.Services
                     UserName = HttpUtility.HtmlDecode(matches[i].Groups["UserName"].Value),
                     TopicLastUpdated = HttpUtility.HtmlDecode(matches[i].Groups["Time"].Value).Substring(0, 10),
                     TopicLastUpdatedDateTime = ToDateTime(HttpUtility.HtmlDecode(matches[i].Groups["Time"].Value)),
-                    ForumColor = string.IsNullOrWhiteSpace(matches[i].Groups["Color"].Value) ? items[^1].ForumColor : matches[i].Groups["Color"].Value
+                    ForumColor = string.IsNullOrWhiteSpace(matches[i].Groups["Color"].Value) ? items[^1].ForumColor : matches[i].Groups["Color"].Value,
+                    ForumCategory = string.IsNullOrWhiteSpace(matches[i].Groups["Category"].Value) ? items[^1].ForumCategory : matches[i].Groups["Category"].Value
                 });
             }
 
@@ -80,7 +81,7 @@ namespace FlashbackMonitor.Services
         {
             // Lokal testning
             //var doc = new HtmlDocument();
-            //doc.Load(@"c:\tmp\fbtopicpage.html");
+            //doc.Load(@"c:\tmp\riktiglista.html");
 
             // Prod
             HtmlWeb web = new HtmlWeb();

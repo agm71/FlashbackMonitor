@@ -46,6 +46,12 @@ namespace FlashbackMonitor
                 Cursor = Cursor.Parse("Hand");
                 AddHandler(PointerReleasedEvent, OnPointerReleased, handledEventsToo: true);
             }
+            else if (TextKind == TextKind.Bullet)
+            {
+                Foreground = new SolidColorBrush(Color.Parse("Green"));
+                FontSize = 18;
+                LineHeight = 10;
+            }
             
             base.ApplyTemplate();
         }

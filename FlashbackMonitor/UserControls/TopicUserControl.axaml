@@ -19,9 +19,9 @@
 		<StackPanel Grid.Row="0">
 			<DockPanel Margin="20">
 				<Image DockPanel.Dock="Left" VerticalAlignment="Center" Source="avares://FlashbackMonitor/Assets/backyellowmod.png" Width="32" Height="32" PointerPressed="BackImage_PointerPressed" Cursor="Hand" />
-				<TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="20 0 0 0" Text="{Binding TopicPage.TopicName}" FontSize="18" TextWrapping="Wrap" />
+				<TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="20 0 0 0" Text="{Binding TopicPage.TopicName}" FontSize="18" TextWrapping="Wrap" Width="650" />
 				<TextBlock DockPanel.Dock="Left" Text="{Binding LoadingText}" IsVisible="{Binding IsLoading}" VerticalAlignment="Center" Margin="10 0 0 0" />
-				<ComboBox SelectedIndex="{Binding SelectedPageIndex}" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding TopicPage.Pages}" DockPanel.Dock="Right" HorizontalAlignment="Right" Foreground="#bbb"/>
+				<ComboBox SelectedIndex="{Binding SelectedPageIndex}" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding TopicPage.PageNumbers}" DockPanel.Dock="Right" HorizontalAlignment="Right" Foreground="#bbb"/>
 			</DockPanel>
 			<Separator Background="#cc9d42" Height="5" Margin="22 0 22 10"/>
 		</StackPanel>
@@ -78,7 +78,7 @@
 																						<ItemsControl.ItemTemplate>
 																							<DataTemplate>
 																								<StackPanel Orientation="Horizontal">
-																									<ItemsControl ItemsSource="{Binding QuoteTextItems}">
+																									<ItemsControl ItemsSource="{Binding TextItems}">
 																										<ItemsControl.ItemsPanel>
 																											<ItemsPanelTemplate>
 																												<WrapPanel Orientation="Horizontal" Width="650" />
@@ -105,7 +105,7 @@
 																																		<ItemsControl.ItemTemplate>
 																																			<DataTemplate>
 																																				<StackPanel Orientation="Horizontal">
-																																					<ItemsControl ItemsSource="{Binding SpoilerTextItems}">
+																																					<ItemsControl ItemsSource="{Binding TextItems}">
 																																						<ItemsControl.ItemsPanel>
 																																							<ItemsPanelTemplate>
 																																								<WrapPanel Orientation="Horizontal" Width="610" />
@@ -156,7 +156,7 @@
 																						<ItemsControl.ItemTemplate>
 																							<DataTemplate>
 																								<StackPanel Orientation="Horizontal">
-																									<ItemsControl ItemsSource="{Binding SpoilerTextItems}">
+																									<ItemsControl ItemsSource="{Binding TextItems}">
 																										<ItemsControl.ItemsPanel>
 																											<ItemsPanelTemplate>
 																												<WrapPanel Orientation="Horizontal" Width="650" />

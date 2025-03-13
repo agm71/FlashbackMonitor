@@ -5,14 +5,13 @@ using FlashbackMonitor.Services;
 using System.Collections.Generic;
 using System;
 using System.Collections.Immutable;
-using System.Text.RegularExpressions;
 
 namespace FlashbackMonitor.Utils
 {
     public class FlashbackParser
     {
         private static TopicPage topicsPage = new();
-        private static readonly string[] htmlTags = ["a", "b", "i"];
+        private static readonly string[] htmlTags = ["a", "b", "i", "ul", "li"];
         private static readonly string flashbackUrl = "https://www.flashback.org";
 
         public static TopicPage ParseTopicsPage(HtmlDocument doc)
@@ -27,7 +26,7 @@ namespace FlashbackMonitor.Utils
             var pagerNode = doc.DocumentNode.SelectSingleNode("//a[contains(@class, 'input-page-jump-xs')]");
 
             topicsPage.PostItems.Clear();
-            topicsPage.Pages.Clear();
+            topicsPage.PageNumbers.Clear();
 
             if (pagerNode != null)
             {
@@ -37,12 +36,12 @@ namespace FlashbackMonitor.Utils
 
                 for (int i = 1; i <= pageCount; i++)
                 {
-                    topicsPage.Pages.Add(i.ToString());
+                    topicsPage.PageNumbers.Add(i.ToString());
                 }
             }
             else
             {
-                topicsPage.Pages.Add("1");
+                topicsPage.PageNumbers.Add("1");
                 topicsPage.CurrentPage = 1;
             }
             
@@ -52,8 +51,8 @@ namespace FlashbackMonitor.Utils
 
                 var postDateRaw = postN.SelectSingleNode(".//div[contains(@class, 'post-heading')]")?.InnerText?.Trim();
 
-                var postDate = Regex.Match(postDateRaw, "^[^\r\n\t]*").Value;
-                
+                var postDate = FlashbackRegexes.PostDateRegex().Match(postDateRaw)?.Value;
+
                 FlashbackPostItem post = new()
                 {
                     Author = postRow.SelectSingleNode(".//a[contains(@class, 'post-user-username')]")?.InnerText?.Trim(),
@@ -119,17 +118,6 @@ namespace FlashbackMonitor.Utils
                         {
                             post.TextContainers.Add(textContainer);
 
-                            var onlyTextSiblingsBefore = AreOnlyTextSiblingsBefore(node);
-                            if (onlyTextSiblingsBefore)
-                            {
-                                var tc = new TextContainer();
-                                tc.TextItems.Add(new TextItem
-                                {
-                                    Kind = TextKind.LineBreak
-                                });
-                                post.TextContainers.Add(tc);
-                            }
-
                             textContainer = new TextContainer();
                             var textitem = new TextItem();
                             ParseQuoteWrapper(textitem, node);
@@ -138,6 +126,8 @@ namespace FlashbackMonitor.Utils
                             post.TextContainers.Add(textContainer);
                             
                             textContainer = new TextContainer();
+
+                            continue;
                         }
 
                         if (node.HasClass("post-bbcode-spoiler-wrapper"))
@@ -153,19 +143,35 @@ namespace FlashbackMonitor.Utils
 
                             textContainer = new TextContainer();
                         }
+
+                        if (node.Name == "ul")
+                        {
+                            post.TextContainers.Add(textContainer);
+
+                            List<ITextContainer> liTextContainers = [];
+                            
+                            ParseUnorderedList(liTextContainers, node);
+
+                            post.TextContainers.AddRange(liTextContainers);
+
+                            post.TextContainers.Add(new TextContainer
+                            {
+                                TextItems = new List<ITextItem>
+                                    {
+                                        new TextItem
+                                        {
+                                            Kind = TextKind.LineBreak
+                                        }
+                                    }
+                            });
+
+                            textContainer = new TextContainer();
+                        }
                     }
                     else if (node.NodeType == HtmlNodeType.Text
                         && !htmlTags.Contains(node.ParentNode.Name) && !string.IsNullOrWhiteSpace(node.InnerText))
                     {
-                        itms = node?.InnerText.Trim().Split(" ").ToList();
-                        for (int i = 0; i < itms.Count; i++)
-                        {
-                            textContainer.TextItems.Add(new TextItem
-                            {
-                                Kind = TextKind.Text,
-                                Text = HttpUtility.HtmlDecode(itms[i].Trim()) + " "
-                            });
-                        }
+                        node.InnerText.SplitIntoTextItems(textContainer, TextKind.Text);
                     }
                 }
 
@@ -176,29 +182,60 @@ namespace FlashbackMonitor.Utils
             return topicsPage;
         }
 
-        static bool AreOnlyTextSiblingsBefore(HtmlNode targetNode)
+        private static void ParseUnorderedList(List<ITextContainer> textContainers, HtmlNode node)
         {
-            var previousSibling = targetNode.PreviousSibling;
+            var liElements = node.SelectNodes(".//li");
 
-            while (previousSibling != null)
+            foreach (var liElement in liElements)
             {
-                if (previousSibling.NodeType != HtmlNodeType.Element && !string.IsNullOrWhiteSpace(previousSibling.InnerText))
-                {
-                    previousSibling = previousSibling.PreviousSibling;
-                    continue;
-                }
-                else
-                {
-                    return false;
-                }
-            }
+                var textContainer = new TextContainer();
 
-            return true;
+                var textItem = new TextItem
+                {
+                    Text = HttpUtility.HtmlDecode("&#x2022; "),
+                    Kind = TextKind.Bullet
+                };
+
+                textContainer.TextItems.Add(textItem);
+
+                foreach (var child in liElement.ChildNodes)
+                {
+                    if (child.NodeType == HtmlNodeType.Element)
+                    {
+                        if (child.Name == "a")
+                        {
+                            var url = child.Attributes["href"].Value;
+
+                            if (url.StartsWith("/"))
+                            {
+                                url = $"{flashbackUrl}{url}";
+                            }
+
+                            child.InnerText.SplitIntoTextItems(textContainer, TextKind.Link, url);
+                        }
+                        else if (child.Name == "b")
+                        {
+                            child.InnerText.SplitIntoTextItems(textContainer, TextKind.Bold);
+                        }
+                        else if (child.Name == "i")
+                        {
+                            child.InnerText.SplitIntoTextItems(textContainer, TextKind.Italic);
+                        }
+                    }
+                    else if (child.NodeType == HtmlNodeType.Text
+                        && !htmlTags.Contains(child.Name) && !string.IsNullOrWhiteSpace(child.InnerText))
+                    {
+                        child.InnerText.SplitIntoTextItems(textContainer, TextKind.Text);
+                    }
+                }
+
+                textContainers.Add(textContainer);
+            }
         }
 
-        private static void ParseSpoilerWrapper(dynamic item, HtmlNode node)
+        private static void ParseSpoilerWrapper(ITextItem item, HtmlNode node)
         {
-            SpoilerContainer spoilerContainer = new();
+            SpoilerTextContainer spoilerContainer = new();
             List<string> itms = [];
             SpoilerContainerCollection spoilerContainerCollection = new();
 
@@ -208,19 +245,19 @@ namespace FlashbackMonitor.Utils
             {
                 foreach (var snode in spoilerContentNodes.SelectMany(x => x.ChildNodes))
                 {
-                    SpoilerTextItem spoilerTextItem = null;
+                    ITextItem spoilerTextItem = null;
 
                     if (snode.NodeType is HtmlNodeType.Element)
                     {
                         if (snode.Name == "br")
                         {
-                            spoilerContainer.SpoilerTextItems.Add(new SpoilerTextItem
+                            spoilerContainer.TextItems.Add(new SpoilerTextItem
                             {
                                 Kind = TextKind.LineBreak
                             });
 
                             spoilerContainerCollection.SpoilerContainers.Add(spoilerContainer);
-                            spoilerContainer = new SpoilerContainer();
+                            spoilerContainer = new SpoilerTextContainer();
                             continue;
                         }
 
@@ -233,6 +270,8 @@ namespace FlashbackMonitor.Utils
 
                             if (snode.Name == "a")
                             {
+                                spoilerTextItem.Kind = TextKind.Link;
+
                                 var url = snode.Attributes["href"].Value;
 
                                 if (url.StartsWith("/"))
@@ -250,22 +289,38 @@ namespace FlashbackMonitor.Utils
                             {
                                 spoilerTextItem.Kind = TextKind.Italic;
                             }
+                            else if (snode.Name == "ul")
+                            {
+                                spoilerContainerCollection.SpoilerContainers.Add(spoilerContainer);
 
-                            spoilerContainer.SpoilerTextItems.Add(spoilerTextItem);
+                                List<ITextContainer> liTextContainers = [];
+
+                                ParseUnorderedList(liTextContainers, node);
+                                spoilerContainerCollection.SpoilerContainers.AddRange(liTextContainers);
+
+                                spoilerContainerCollection.SpoilerContainers.Add(new SpoilerTextContainer
+                                {
+                                    TextItems =
+                                    [
+                                        new SpoilerTextItem
+                                        {
+                                            Kind = TextKind.LineBreak
+                                        }
+                                    ]
+                                });
+
+                                spoilerContainer = new SpoilerTextContainer();
+
+                                continue;
+                            }
+
+                            spoilerContainer.TextItems.Add(spoilerTextItem);
                         }
                     }
                     else if (snode.NodeType == HtmlNodeType.Text
                         && !htmlTags.Contains(snode.ParentNode.Name) && !string.IsNullOrWhiteSpace(snode.InnerText))
                     {
-                        itms = snode?.InnerText.Trim().Split(" ").ToList();
-                        for (int i = 0; i < itms.Count; i++)
-                        {
-                            spoilerContainer.SpoilerTextItems.Add(new SpoilerTextItem
-                            {
-                                Kind = TextKind.Text,
-                                Text = HttpUtility.HtmlDecode(itms[i].Trim()) + " "
-                            });
-                        }
+                        snode.InnerText.SplitIntoTextItems(spoilerContainer, TextKind.Text);
                     }
                 }
             }
@@ -276,8 +331,8 @@ namespace FlashbackMonitor.Utils
 
         private static void ParseQuoteWrapper(TextItem item, HtmlNode node)
         {
-            QuoteContainer quoteContainer = new();
-            
+            QuoteTextContainer quoteContainer = new();
+
             List<string> itms = [];
 
             QuoteContainerCollection quoteContainerCollection = new()
@@ -296,15 +351,15 @@ namespace FlashbackMonitor.Utils
                     {
                         if (cnode.Name == "br")
                         {
-                            quoteContainer.QuoteTextItems.Add(new QuoteTextItem
+                            quoteContainer.TextItems.Add(new QuoteTextItem
                             {
                                 Kind = TextKind.LineBreak
                             });
 
                             quoteContainerCollection.QuoteContainers.Add(quoteContainer);
-                            
-                            quoteContainer = new QuoteContainer();
-                            
+
+                            quoteContainer = new QuoteTextContainer();
+
                             continue;
                         }
 
@@ -318,14 +373,14 @@ namespace FlashbackMonitor.Utils
                             if (cnode.Name == "a")
                             {
                                 quoteTextItem.Kind = TextKind.Link;
-                                
+
                                 var url = cnode.Attributes["href"].Value;
-                                
+
                                 if (url.StartsWith("/"))
                                 {
                                     url = $"{flashbackUrl}{url}";
                                 }
-                                
+
                                 quoteTextItem.AdditionalData = url;
                             }
                             else if (cnode.Name == "b")
@@ -336,15 +391,39 @@ namespace FlashbackMonitor.Utils
                             {
                                 quoteTextItem.Kind = TextKind.Italic;
                             }
+                            else if (cnode.Name == "ul")
+                            {
+                                quoteContainerCollection.QuoteContainers.Add(quoteContainer);
 
-                            quoteContainer.QuoteTextItems.Add(quoteTextItem);
+                                List<ITextContainer> liTextContainers = [];
+
+                                ParseUnorderedList(liTextContainers, node);
+                                quoteContainerCollection.QuoteContainers.AddRange(liTextContainers);
+
+                                quoteContainerCollection.QuoteContainers.Add(new QuoteTextContainer
+                                {
+                                    TextItems =
+                                    [
+                                        new QuoteTextItem
+                                        {
+                                            Kind = TextKind.LineBreak
+                                        }
+                                    ]
+                                });
+
+                                quoteContainer = new QuoteTextContainer();
+
+                                continue;
+                            }
+
+                            quoteContainer.TextItems.Add(quoteTextItem);
                         }
                         else if (cnode.HasClass("post-bbcode-spoiler-wrapper"))
                         {
-                            quoteContainer ??= new QuoteContainer();
-                            var it = quoteContainer.QuoteTextItems.LastOrDefault() ?? new QuoteTextItem();
-                            ParseSpoilerWrapper(quoteContainerCollection.QuoteContainers.LastOrDefault()?.QuoteTextItems?.LastOrDefault() ?? it, cnode);
-                            quoteContainer.QuoteTextItems.Add(it);
+                            quoteContainer ??= new QuoteTextContainer();
+                            var it = quoteContainer.TextItems.LastOrDefault() ?? new QuoteTextItem();
+                            ParseSpoilerWrapper(quoteContainerCollection.QuoteContainers.LastOrDefault()?.TextItems?.LastOrDefault() ?? it, cnode);
+                            quoteContainer.TextItems.Add(it);
                         }
                     }
                     else if (cnode.NodeType == HtmlNodeType.Text
@@ -353,7 +432,7 @@ namespace FlashbackMonitor.Utils
                         itms = cnode?.InnerText.Trim().Split(" ").ToList();
                         for (int i = 0; i < itms.Count; i++)
                         {
-                            quoteContainer.QuoteTextItems.Add(new QuoteTextItem
+                            quoteContainer.TextItems.Add(new QuoteTextItem
                             {
                                 Kind = TextKind.Text,
                                 Text = HttpUtility.HtmlDecode(itms[i].Trim()) + " "

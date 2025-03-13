@@ -13,8 +13,6 @@ namespace FlashbackMonitor.Views
 
         public MainWindowViewModel ViewModel { get; set; }
 
-        private MainUserControl mainUC = new();
-
         public MainWindow()
         {
             InitializeComponent();
