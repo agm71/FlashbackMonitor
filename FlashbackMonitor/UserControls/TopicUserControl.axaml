@@ -69,10 +69,10 @@
 																			</ItemsControl.ItemsPanel>
 																			<ItemsControl.ItemTemplate>
 																				<DataTemplate>
-																					<Border BorderBrush="Gray" BorderThickness="1" Background="#191818" Padding="10" Margin="0 0 0 20">
-																						<StackPanel Background="#191818">
-																							<StackPanel Background="#191818" IsVisible="{Binding UserName, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='UserName'}">
-																								<TextBlock Background="#191818" Text="Ursprungligen postat av " Padding="0 0 0 5">
+																					<Border BorderBrush="Gray" BorderThickness="1" Background="#121111" Padding="10" Margin="0 0 0 20">
+																						<StackPanel Background="#121111">
+																							<StackPanel Background="#121111" IsVisible="{Binding UserName, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='UserName'}">
+																								<TextBlock Background="#121111" Text="Ursprungligen postat av " Padding="0 0 0 5">
 																									<Run Text="{Binding UserName}" Foreground="#cc9d42"/>
 																								</TextBlock>
 																							</StackPanel>
@@ -98,9 +98,9 @@
 																															<ItemsControl ItemsSource="{Binding SpoilerContainerCollections}">
 																																<ItemsControl.ItemTemplate>
 																																	<DataTemplate>
-																																		<Border BorderBrush="Gray" BorderThickness="1" Background="#191818" Width="590" Padding="10">
-																																			<StackPanel Background="#191818">
-																																				<StackPanel Background="#191818">
+																																		<Border BorderBrush="Gray" BorderThickness="1" Background="#121111" Width="590" Padding="10">
+																																			<StackPanel Background="#121111">
+																																				<StackPanel Background="#121111">
 																																					<Button Content="SPOILER" Click="SpoilerButton_Click" Margin="0 0 0 10" />
 																																				</StackPanel>
 																																				<ItemsControl ItemsSource="{Binding SpoilerContainers}" IsVisible="False">
@@ -153,9 +153,9 @@
 																		<ItemsControl ItemsSource="{Binding SpoilerContainerCollections}">
 																			<ItemsControl.ItemTemplate>
 																				<DataTemplate>
-																					<Border BorderBrush="Gray" BorderThickness="1" Background="#191818" Width="620" Padding="10">
-																						<StackPanel Background="#191818">
-																							<StackPanel Background="#191818">
+																					<Border BorderBrush="Gray" BorderThickness="1" Background="#121111" Width="620" Padding="10">
+																						<StackPanel Background="#121111">
+																							<StackPanel Background="#121111">
 																								<Button Content="SPOILER" Click="SpoilerButton_Click" Margin="0 0 0 10" />
 																							</StackPanel>
 																							<ItemsControl ItemsSource="{Binding SpoilerContainers}" IsVisible="False">
