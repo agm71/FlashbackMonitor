@@ -10,6 +10,7 @@ namespace FlashbackMonitor.Views
     {
         private MainUserControl _mainUserControl = new MainUserControl();
         private TopicUserControl _topicUserControl = new TopicUserControl();
+        private ThreadListUserControl _threadListUserControl = new ThreadListUserControl();
 
         public MainWindowViewModel ViewModel { get; set; }
 
@@ -30,14 +31,25 @@ namespace FlashbackMonitor.Views
         {
             ContentHost1.Content = null;
             _mainUserControl.NavigateToTopic += ShowTopicUserControl;
+            _mainUserControl.NavigateToThreadList += ShowThreadListUserControl;
             ContentHost1.Content = _mainUserControl;
         }
 
-        private void ShowTopicUserControl(string t)
+        private void ShowThreadListUserControl(string forumUrl = null)
         {
             ContentHost1.Content = null;
-            _topicUserControl = new TopicUserControl(t);
+            _threadListUserControl = new ThreadListUserControl(forumUrl);
+            _threadListUserControl.NavigateToMain += ShowMainUserControl;
+            _threadListUserControl.NavigateToTopic += ShowTopicUserControl;
+            ContentHost1.Content = _threadListUserControl;
+        }
+
+        private void ShowTopicUserControl(string t, string from = null)
+        {
+            ContentHost1.Content = null;
+            _topicUserControl = new TopicUserControl(t, from);
             _topicUserControl.NavigateToMain += ShowMainUserControl;
+            _topicUserControl.NavigateToThreadList += ShowThreadListUserControl;
             ContentHost1.Content = _topicUserControl;
         }
 

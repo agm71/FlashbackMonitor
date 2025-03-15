@@ -17,7 +17,7 @@ namespace FlashbackMonitor.ViewModels
         public bool IsFavoriteTopic
         {
             get => _isFavoriteTopic;
-            set => _isFavoriteTopic = value; //this.RaiseAndSetIfChanged(ref _isFavoriteTopic, value);
+            set => _isFavoriteTopic = value;
         }
 
         private bool _isFavoriteUser;
@@ -27,6 +27,9 @@ namespace FlashbackMonitor.ViewModels
             set => this.RaiseAndSetIfChanged(ref _isFavoriteUser, value);
         }
         public string ForumName { get; set; }
+        public string ForumUrl { get; set; }
         public int Index { get; set; }
+
+        public string ForumCategory { get; set; }
     }
 }

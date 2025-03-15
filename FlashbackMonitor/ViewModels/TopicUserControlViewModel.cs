@@ -78,7 +78,7 @@ namespace FlashbackMonitor.ViewModels
             }
             catch
             {
-                await Task.Delay(5000);
+                await Task.Delay(10000);
                 MessageLoadingCount++;
                 goto load;
             }

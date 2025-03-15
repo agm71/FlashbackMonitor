@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:FlashbackMonitor.ViewModels"
+			 x:DataType="vm:ThreadsListUserControlViewModel"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="FlashbackMonitor.ThreadListUserControl"
+			 xmlns:local="using:FlashbackMonitor.Converters"
+			 FontSize="12">
+	<UserControl.Resources>
+		<local:BooleanToPropertyValueConverter x:Key="BooleanToPropertyValueConverter" />
+	</UserControl.Resources>
+	<Grid RowDefinitions="Auto,*" Margin="0 0 0 20">
+		<StackPanel Grid.Row="0">
+			<DockPanel Margin="20">
+				<Image DockPanel.Dock="Left" VerticalAlignment="Center" Source="avares://FlashbackMonitor/Assets/backyellowmod.png" Width="32" Height="32" PointerPressed="BackImage_PointerPressed" Cursor="Hand" />
+				<TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="20 0 0 0" Text="{Binding ThreadListPage.ForumName}" FontSize="18" TextWrapping="Wrap" Width="640" />
+				<TextBlock DockPanel.Dock="Left" Text="{Binding LoadingText}" IsVisible="{Binding IsLoading}" VerticalAlignment="Center" Margin="10 0 0 0" />
+			</DockPanel>
+			<Separator Background="#cc9d42" Height="5" Margin="22 0 22 10"/>
+		</StackPanel>
+		<Border Grid.Row="1" BorderBrush="#2f2e2e" BorderThickness="1" Margin="22 20" VerticalAlignment="Stretch">
+			<ScrollViewer x:Name="SV" VerticalScrollBarVisibility="Visible" VerticalAlignment="Top">
+				<ItemsControl x:Name="ForumOverviewItemsControl" ItemsSource="{Binding ThreadListPage.ThreadItems}" Margin="0 0">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Margin="0 0 0 0">
+								<Border BorderBrush="#2f2e2e" BorderThickness="0 0 0 1">
+									<Grid ColumnDefinitions="450,*,*" Background="{Binding PinnedThread, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='pinnedthread'}">
+										<Border Grid.Column="0" BorderBrush="#2f2e2e" BorderThickness="0 0 1 0">
+											<StackPanel>
+												<TextBlock Padding="10" Text="{Binding TopicName}" Cursor="Hand" PointerPressed="TopicNameTextBlock_PointerPressed" Tag="{Binding TopicUrl}" TextWrapping="Wrap" />
+												<TextBlock Padding="10 0 0 10" Text="{Binding Author}" TextWrapping="Wrap" Foreground="#cc9d42" />
+											</StackPanel>
+										</Border>
+										<Border Grid.Column="1" BorderBrush="#2f2e2e" BorderThickness="0 0 1 0">
+											<StackPanel>
+												<TextBlock Padding="10" HorizontalAlignment="Right" Text="{Binding NumReplies}" Cursor="Hand" PointerPressed="TopicNameTextBlock_PointerPressed" Tag="{Binding TopicUrl}" TextWrapping="Wrap" />
+												<TextBlock Padding="0 0 10 0" HorizontalAlignment="Right" Text="{Binding NumViews}" TextWrapping="Wrap" />
+											</StackPanel>
+										</Border>
+										<StackPanel Grid.Column="2">
+											<TextBlock Padding="10 10 20 10" HorizontalAlignment="Right" Text="{Binding PostDate}"/>
+											<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+												<TextBlock Text="Av " />
+												<TextBlock Padding="0 0 20 0" Text="{Binding LastPostUserName}" Foreground="#cc9d42" />
+											</StackPanel>
+										</StackPanel>
+									</Grid>
+								</Border>
+							</StackPanel>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</ScrollViewer>
+		</Border>
+	</Grid>
+</UserControl>

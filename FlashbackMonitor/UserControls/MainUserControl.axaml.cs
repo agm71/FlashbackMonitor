@@ -8,8 +8,10 @@ namespace FlashbackMonitor;
 
 public partial class MainUserControl : UserControl
 {
-    public event Action<string> NavigateToTopic;
+    public event Action<string, string> NavigateToTopic;
+
     public event Action NavigateToSettings;
+    public event Action<string> NavigateToThreadList;
 
     public MainUserControl()
     {
@@ -23,7 +25,7 @@ public partial class MainUserControl : UserControl
             if (sender is TextBlock clickedTextBlock)
             {
                 var tagValue = clickedTextBlock.Tag?.ToString();
-                NavigateToTopic?.Invoke(tagValue);
+                NavigateToTopic?.Invoke(tagValue, "main");
             }
         }
     }
@@ -113,5 +115,51 @@ public partial class MainUserControl : UserControl
         }
        
         viewModel.SaveSettingsCommand.Execute(null);
+    }
+
+    private void ViewComboBox_SelectionChanged(object sender, Avalonia.Controls.SelectionChangedEventArgs e)
+    {
+        var viewModel = DataContext as MainWindowViewModel;
+        var comboBox = sender as ComboBox;
+        var selectedIndex = comboBox.SelectedIndex;
+
+        var scrollViewer = this.FindControl<ScrollViewer>("SV");
+
+        var searchTextBox = this.FindControl<TextBox>("SearchTextBox");
+        var notificationsFilterComboBox = this.FindControl<ComboBox>("NotificationsFilterComboBox");
+        var usersFilterComboBox = this.FindControl<ComboBox>("UsersFilterComboBox");
+
+        if (selectedIndex == 0)
+        {
+            viewModel.ShowOverviewView = false;
+            viewModel.ShowNotificationView = true;
+
+            searchTextBox.IsEnabled = true;
+            notificationsFilterComboBox.IsEnabled = true;
+            usersFilterComboBox.IsEnabled = true;
+        }
+        else if (selectedIndex == 1)
+        {
+            viewModel.ShowNotificationView = false;
+            viewModel.ShowOverviewView = true;
+
+            searchTextBox.IsEnabled = false;
+            notificationsFilterComboBox.IsEnabled = false;
+            usersFilterComboBox.IsEnabled = false;
+        }
+
+        scrollViewer.ScrollToHome();
+    }
+
+    private void ForumNameTextBlock_PointerPressed(object sender, Avalonia.Input.PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        {
+            if (sender is TextBlock clickedTextBlock)
+            {
+                var tagValue = clickedTextBlock.Tag?.ToString();
+                NavigateToThreadList?.Invoke(tagValue);
+            }
+        }
     }
 }

@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Input;
@@ -20,6 +21,24 @@ namespace FlashbackMonitor.ViewModels
         public ObservableCollection<ForumViewModel> ForumItems { get; } = [];
         public ObservableCollection<UserViewModel> Users { get; set; } = [];
         public ObservableCollection<TopicViewModel> Topics { get; set; } = [];
+        public ObservableCollection<CategoryWithForumsViewModel> CategoryWithForums { get; set; } = [];
+
+        private static CancellationTokenSource cancellationTokenSource;
+        CancellationToken token;
+
+        private bool _showOverviewView;
+        public bool ShowOverviewView
+        {
+            get => _showOverviewView;
+            set => this.RaiseAndSetIfChanged(ref _showOverviewView, value);
+        }
+
+        private bool _showNotificationView = true;
+        public bool ShowNotificationView
+        {
+            get => _showNotificationView;
+            set => this.RaiseAndSetIfChanged(ref _showNotificationView, value);
+        }
 
         private string _searchText;
         public string SearchText
@@ -30,6 +49,16 @@ namespace FlashbackMonitor.ViewModels
                 this.RaiseAndSetIfChanged(ref _searchText, value);
                 ApplyFilter();
             }        
+        }
+
+        private int _selectedTopicIndex2 = 0;
+        public int SelectedTopicIndex2
+        {
+            get => _selectedTopicIndex2;
+            set
+            {
+                _selectedTopicIndex2 = value;
+            }
         }
 
         private int _selectedTopicIndex = -1;
@@ -232,11 +261,15 @@ namespace FlashbackMonitor.ViewModels
         {
             await _settingsService.SaveSettingsAsync(this);
             _settings = await _settingsService.GetSettingsAsync();
+            Interval = _settings.Interval;
+            cancellationTokenSource.Cancel();
             ApplyFilter();
         }
 
         public async Task LoadDataAsync(bool initial)
         {
+            
+
         LoadDataAsync:
             MessageLoadingCount = 1;
             IsLoading = true;
@@ -244,6 +277,9 @@ namespace FlashbackMonitor.ViewModels
             UpdateStatusDescription = "Hämtar data";
 
             IEnumerable<FlashbackDataItem> data;
+
+            cancellationTokenSource = new CancellationTokenSource();
+            token = cancellationTokenSource.Token;
 
         getData:
             try
@@ -275,24 +311,37 @@ namespace FlashbackMonitor.ViewModels
 
             data = data.OrderByDescending(x => x.TopicLastUpdatedDateTime);
 
+            List<NotificationViewModel> notItems = new List<NotificationViewModel>();
+            foreach (var item in data)
+            {
+                notItems.Add(new NotificationViewModel
+                {
+                    UserName = item.UserName,
+                    VipUser = _settings.Users.Any(u => string.Equals(u.UserName, item.UserName, StringComparison.OrdinalIgnoreCase) && u.VipUser),
+                    IsFavoriteUser = _settings.Users.Any(u => string.Equals(u.UserName, item.UserName, StringComparison.OrdinalIgnoreCase) && u.Favorite),
+                    TopicName = item.TopicName,
+                    TopicUrl = item.TopicUrl,
+                    TopicLastUpdated = item.TopicLastUpdated,
+                    TopicColor = item.ForumColor,
+                    IsFavoriteTopic = _settings.Topics.Exists(x => string.Equals(x.TopicName, item.TopicName, StringComparison.OrdinalIgnoreCase) && x.IsFavoriteTopic),
+                    ForumName = item.ForumName,
+                    Index = item.Index,
+                    ForumCategory = item.ForumCategory,
+                    ForumUrl = item.ForumUrl
+                });
+            }
+
+            CategoryWithForums.Clear();
+            CategoryWithForums.AddRange(notItems.OrderBy(x => x.Index).GroupBy(x => x.ForumCategory).Select(x => new CategoryWithForumsViewModel
+            {
+                Category = x.Key,
+                ForumColor = x.First().TopicColor,
+                Notifications = [.. x]
+            }));
+
             if (initial)
             {
-                foreach (var item in data)
-                {
-                    AllNotificationItems.Add(new NotificationViewModel
-                    {
-                        UserName = item.UserName,
-                        VipUser = _settings.Users.Any(u => string.Equals(u.UserName, item.UserName, StringComparison.OrdinalIgnoreCase) && u.VipUser),
-                        IsFavoriteUser = _settings.Users.Any(u => string.Equals(u.UserName, item.UserName, StringComparison.OrdinalIgnoreCase) && u.Favorite),
-                        TopicName = item.TopicName,
-                        TopicUrl = item.TopicUrl,
-                        TopicLastUpdated = item.TopicLastUpdated,
-                        TopicColor = item.ForumColor,
-                        IsFavoriteTopic = _settings.Topics.Exists(x => string.Equals(x.TopicName, item.TopicName, StringComparison.OrdinalIgnoreCase) && x.IsFavoriteTopic),
-                        ForumName = item.ForumName,
-                        Index = item.Index,
-                    });
-                }
+                AllNotificationItems.AddRange(notItems);
             }
             else
             {
@@ -321,6 +370,8 @@ namespace FlashbackMonitor.ViewModels
                             IsFavoriteTopic = _settings.Topics.Exists(x => string.Equals(x.TopicName, item.TopicName, StringComparison.OrdinalIgnoreCase) && x.IsFavoriteTopic),
                             ForumName = item.ForumName,
                             Index = item.Index,
+                            ForumCategory = item.ForumCategory,
+                            ForumUrl = item.ForumUrl
                         });
                     }
                 }
@@ -339,8 +390,15 @@ namespace FlashbackMonitor.ViewModels
 
             initial = false;
 
-            await Task.Delay(Interval * 1000);
-
+            try
+            {
+                await Task.Delay(Interval * 1000, token);
+            }
+            catch (TaskCanceledException)
+            {
+                goto LoadDataAsync;
+            }
+            
             goto LoadDataAsync;
         }
     }

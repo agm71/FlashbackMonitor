@@ -9,6 +9,7 @@ namespace FlashbackMonitor.Services
         public string ForumColor { get; set; }
         public string TopicName { get; set; }
         public string ForumCategory { get; set; }
+        public string ForumUrl { get; set; }
         public string TopicUrl { get; set; }
         public string TopicLastUpdated { get; set; }
         public DateTime TopicLastUpdatedDateTime { get; set; }

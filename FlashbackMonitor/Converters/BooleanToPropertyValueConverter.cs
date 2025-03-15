@@ -1,5 +1,6 @@
 ﻿using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using FlashbackMonitor.Services;
 using System;
 using System.Globalization;
@@ -30,12 +31,12 @@ namespace FlashbackMonitor.Converters
                 {
                     case "vipuser":
                         return boolean
-                            ? new Bitmap("Assets/crown.png")
-                            : new Bitmap("Assets/crown_gray.png");
+                            ? new Bitmap(AssetLoader.Open(new Uri("avares://FlashbackMonitor/Assets/crown.png")))
+                            : new Bitmap(AssetLoader.Open(new Uri("avares://FlashbackMonitor/Assets/crown_gray.png")));
                     case "ignoreduser":
                         return boolean
-                            ? new Bitmap("Assets/stop.png")
-                            : new Bitmap("Assets/stop_gray.png");
+                            ? new Bitmap(AssetLoader.Open(new Uri("avares://FlashbackMonitor/Assets/stop.png")))
+                            : new Bitmap(AssetLoader.Open(new Uri("avares://FlashbackMonitor/Assets/stop_gray.png")));
                     case "favoriteuser":
                         return boolean
                             ? "#f99404"
@@ -48,6 +49,10 @@ namespace FlashbackMonitor.Converters
                         return boolean
                             ? "#cc9d42"
                             : "Gray";
+                    case "pinnedthread":
+                        return boolean
+                            ? "Black"
+                            : "#191818";
                 }
             }
 

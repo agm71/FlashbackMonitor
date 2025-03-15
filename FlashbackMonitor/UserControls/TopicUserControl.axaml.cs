@@ -7,7 +7,6 @@ using FlashbackMonitor.Services;
 using FlashbackMonitor.ViewModels;
 using System;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace FlashbackMonitor;
 
@@ -16,9 +15,13 @@ public partial class TopicUserControl : UserControl
     private bool _disposed;
 
     public event Action NavigateToMain;
+    public event Action<string> NavigateToThreadList;
+
     public TopicUserControlViewModel ViewModel { get; }
 
     public string TopicUrl { get; set; }
+
+    public string From { get; set; }
 
     public TopicUserControl()
     {
@@ -27,23 +30,19 @@ public partial class TopicUserControl : UserControl
         DataContext = ViewModel;
     }
 
-    public TopicUserControl(string topicUrl)
+    public TopicUserControl(string topicUrl, string from = null)
     {
         InitializeComponent();
         ViewModel = new TopicUserControlViewModel(new FlashbackService(), topicUrl);
         DataContext = ViewModel;
         TopicUrl = topicUrl;
+        From = from;
     }
 
     protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
         Dispose();
         base.OnDetachedFromLogicalTree(e);
-    }
-
-    private void TextBlock_PointerPressed(object sender, Avalonia.Input.PointerPressedEventArgs e)
-    {
-        NavigateToMain?.Invoke();
     }
 
     protected override async void OnInitialized()
@@ -53,14 +52,25 @@ public partial class TopicUserControl : UserControl
         if (DataContext is TopicUserControlViewModel viewModel)
         {
             await ViewModel.InitializeAsync();
-            var scrollViewer = this.FindControl<ScrollViewer>("SV");
-            scrollViewer.ScrollToEnd();
+            
+            if (From == "main")
+            {
+                var scrollViewer = this.FindControl<ScrollViewer>("SV");
+                scrollViewer.ScrollToEnd();
+            }
         }
     }
 
     private void BackImage_PointerPressed(object sender, Avalonia.Input.PointerPressedEventArgs e)
     {
-        NavigateToMain?.Invoke();
+        if (From == "main")
+        {
+            NavigateToMain?.Invoke();
+        }
+        else
+        {
+            NavigateToThreadList?.Invoke(From);
+        }
     }
 
     private void TextBlockTopicText_PointerEntered(object sender, Avalonia.Input.PointerEventArgs e)
@@ -182,5 +192,24 @@ public partial class TopicUserControl : UserControl
         }
 
         return null;
+    }
+
+    private void PreviousPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.First())
+        {
+            var pageNumberComboBox = this.FindControl<ComboBox>("PageNumberComboBox");
+            PageNumberComboBox.SelectedIndex = PageNumberComboBox.SelectedIndex - 1;
+        }
+
+    }
+
+    private void NextPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.Last())
+        {
+            var pageNumberComboBox = this.FindControl<ComboBox>("PageNumberComboBox");
+            PageNumberComboBox.SelectedIndex = PageNumberComboBox.SelectedIndex + 1;
+        }
     }
 }

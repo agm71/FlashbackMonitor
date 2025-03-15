@@ -7,5 +7,6 @@ namespace FlashbackMonitor.Services
     {
         Task<IEnumerable<FlashbackDataItem>> GetFlashbackDataAsync();
         Task<TopicPage> GetTopicPageAsync(string topicUrl);
+        Task<ThreadListPage> GetThreadListPageAsync(string forumUrl);
     }
 }

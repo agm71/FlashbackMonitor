@@ -42,6 +42,30 @@ namespace FlashbackMonitor.Services
         public ObservableCollection<FlashbackPostItem> PostItems { get; set; } = [];
     }
 
+    public class ThreadListPage : ViewModelBase
+    {
+        private string _forumName;
+        public string ForumName
+        {
+            get => _forumName;
+            set => this.RaiseAndSetIfChanged(ref _forumName, value);
+        }
+
+        public ObservableCollection<ThreadItem> ThreadItems { get; set; } = [];
+    }
+
+    public class ThreadItem
+    {
+        public string Author { get; set; }
+        public string LastPostUserName { get; set; }
+        public string TopicUrl { get; set; }
+        public string TopicName { get; set; }
+        public string PostDate { get; set; }
+        public string NumReplies { get; set; }
+        public string NumViews { get; set; }
+        public bool PinnedThread { get; set; }
+    }
+
     public class FlashbackPostItem
     {
         public string Author { get; set; }

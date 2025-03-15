@@ -51,7 +51,8 @@ namespace FlashbackMonitor.Services
                     TopicLastUpdated = HttpUtility.HtmlDecode(matches[i].Groups["Time"].Value).Substring(0, 10),
                     TopicLastUpdatedDateTime = ToDateTime(HttpUtility.HtmlDecode(matches[i].Groups["Time"].Value)),
                     ForumColor = string.IsNullOrWhiteSpace(matches[i].Groups["Color"].Value) ? items[^1].ForumColor : matches[i].Groups["Color"].Value,
-                    ForumCategory = string.IsNullOrWhiteSpace(matches[i].Groups["Category"].Value) ? items[^1].ForumCategory : matches[i].Groups["Category"].Value
+                    ForumCategory = HttpUtility.HtmlDecode(string.IsNullOrWhiteSpace(matches[i].Groups["Category"].Value) ? items[^1].ForumCategory : matches[i].Groups["Category"].Value),
+                    ForumUrl = $"{FlashbackBaseUrl}{matches[i].Groups["ForumUrl"].Value}"
                 });
             }
 
@@ -81,7 +82,7 @@ namespace FlashbackMonitor.Services
         {
             // Lokal testning
             //var doc = new HtmlDocument();
-            //doc.Load(@"c:\tmp\riktiglista.html");
+            //doc.Load(@"c:\tmp\k.html");
 
             // Prod
             HtmlWeb web = new HtmlWeb();
@@ -90,6 +91,23 @@ namespace FlashbackMonitor.Services
             var topicPage = FlashbackParser.ParseTopicsPage(doc);
 
             return topicPage;
+        }
+
+#pragma warning disable CS1998
+        public async Task<ThreadListPage> GetThreadListPageAsync(string forumUrl)
+#pragma warning restore CS1998
+        {
+            // Lokal testning
+            //var doc = new HtmlDocument();
+            //doc.Load(@"c:\tmp\itsakerhet.html");
+
+            // Prod
+            HtmlWeb web = new HtmlWeb();
+            var doc = await web.LoadFromWebAsync(forumUrl);
+
+            var threadListPage = FlashbackParser.ParseThreadListPage(doc);
+
+            return threadListPage;
         }
     }
 }

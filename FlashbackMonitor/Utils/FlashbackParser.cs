@@ -5,6 +5,7 @@ using FlashbackMonitor.Services;
 using System.Collections.Generic;
 using System;
 using System.Collections.Immutable;
+using DynamicData;
 
 namespace FlashbackMonitor.Utils
 {
@@ -16,9 +17,9 @@ namespace FlashbackMonitor.Utils
 
         public static TopicPage ParseTopicsPage(HtmlDocument doc)
         {
-            var TopicTitle = HttpUtility.HtmlDecode(doc.DocumentNode.SelectSingleNode("//meta[contains(@property, 'og:title')]").GetAttributeValue("content", null));
+            var TopicTitle = HttpUtility.HtmlDecode(doc.DocumentNode.SelectSingleNode("//meta[contains(@property, 'og:title')]")?.GetAttributeValue("content", null));
 
-            topicsPage.TopicName = TopicTitle;
+            topicsPage.TopicName = HttpUtility.HtmlDecode(TopicTitle);
             List<string> itms = [];
 
             var postsNode = doc.DocumentNode.SelectSingleNode("//div[contains(@id, 'posts')]");
@@ -134,6 +135,17 @@ namespace FlashbackMonitor.Utils
                         {
                             post.TextContainers.Add(textContainer);
 
+                            post.TextContainers.Add(new TextContainer
+                            {
+                                TextItems = new List<ITextItem>
+                                    {
+                                        new TextItem
+                                        {
+                                            Kind = TextKind.LineBreak
+                                        }
+                                    }
+                            });
+
                             textContainer = new TextContainer();
                             var textitem = new TextItem();
                             ParseSpoilerWrapper(textitem, node);
@@ -142,6 +154,8 @@ namespace FlashbackMonitor.Utils
                             post.TextContainers.Add(textContainer);
 
                             textContainer = new TextContainer();
+
+                            continue;
                         }
 
                         if (node.Name == "ul")
@@ -444,6 +458,40 @@ namespace FlashbackMonitor.Utils
 
             quoteContainerCollection.QuoteContainers.Add(quoteContainer);
             item.QuoteContainerCollections.Add(quoteContainerCollection);
+        }
+
+        public static ThreadListPage ParseThreadListPage(HtmlDocument doc)
+        {
+            ThreadListPage threadListpage = new();
+
+            var forumCategory = HttpUtility.HtmlDecode(doc.DocumentNode.SelectSingleNode(".//ol[contains(@class, 'breadcrumb')]//li[1]//a")?.InnerText);
+            var forumName = HttpUtility.HtmlDecode(doc.DocumentNode.SelectSingleNode(".//ol[contains(@class, 'breadcrumb')]//li[2]//a")?.InnerText);
+            threadListpage.ForumName = $"{forumCategory} / {forumName}";
+
+            var threadsList = doc.DocumentNode.SelectSingleNode("//table[contains(@id, 'threadslist')]");
+
+            var threadItems = new List<ThreadItem>();
+
+            foreach (var thread in threadsList.SelectNodes(".//tbody//tr"))
+            {
+                var topic = new ThreadItem
+                {
+                    TopicName = HttpUtility.HtmlDecode(thread.SelectSingleNode(".//td[2]//div//a")?.InnerText?.Trim()),
+                    TopicUrl = HttpUtility.HtmlDecode(thread.SelectSingleNode(".//td[2]//div//a")?.GetAttributeValue("href", null)),
+                    Author = HttpUtility.HtmlDecode(thread.SelectSingleNode(".//td[contains(@class, 'td_title')]//span//span")?.InnerText?.Trim()),
+                    PostDate = HttpUtility.HtmlDecode(thread.SelectSingleNode(".//td[contains(@class, 'td_last_post')]//div")?.InnerText?.Trim()),
+                    LastPostUserName = HttpUtility.HtmlDecode(thread.SelectSingleNode(".//td[contains(@class, 'td_last_post')]//div[2]//span//a")?.InnerText?.Trim()),
+                    NumReplies = HttpUtility.HtmlDecode(thread.SelectSingleNode(".//td[3]//div[1]")?.InnerText?.Trim()),
+                    NumViews = HttpUtility.HtmlDecode(thread.SelectSingleNode(".//td[3]//div[2]")?.InnerText?.Trim()),
+                    PinnedThread = thread.HasClass("tr_sticky")
+                };
+
+                threadItems.Add(topic);
+            }
+
+            threadListpage.ThreadItems.AddRange(threadItems);
+
+            return threadListpage;
         }
     }
 }
