@@ -37,7 +37,19 @@ namespace FlashbackMonitor.ViewModels
             set => this.RaiseAndSetIfChanged(ref _loadingText, value);
         }
 
-        public int MessageLoadingCount { get; set; } = 1;
+        private bool _showRetryButton;
+        public bool ShowRetryButton
+        {
+            get => _showRetryButton;
+            set => this.RaiseAndSetIfChanged(ref _showRetryButton, value);
+        }
+
+        private bool _showErrorMsg;
+        public bool ShowErrorMsg
+        {
+            get => _showErrorMsg;
+            set => this.RaiseAndSetIfChanged(ref _showErrorMsg, value);
+        }
 
         public ThreadsListUserControlViewModel() { }
 
@@ -49,14 +61,13 @@ namespace FlashbackMonitor.ViewModels
 
         public async Task InitializeAsync()
         {
-            MessageLoadingCount = 1;
-
-        load:
             try
             {
+                ShowErrorMsg = false;
                 IsLoading = true;
+                ShowRetryButton = false;
 
-                LoadingText = $"Hämtar data... (försök {MessageLoadingCount})";
+                LoadingText = $"Hämtar data...";
 
                 ThreadListPage = await _flashbackService.GetThreadListPageAsync(ForumUrl);
 
@@ -64,9 +75,9 @@ namespace FlashbackMonitor.ViewModels
             }
             catch
             {
-                await Task.Delay(10000);
-                MessageLoadingCount++;
-                goto load;
+                IsLoading = false;
+                ShowRetryButton = true;
+                ShowErrorMsg = true;
             }
         }
     }

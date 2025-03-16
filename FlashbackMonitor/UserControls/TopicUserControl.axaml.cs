@@ -196,20 +196,28 @@ public partial class TopicUserControl : UserControl
 
     private void PreviousPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.First())
+        ViewModel.ClickedPageArrow = true;
+
+        if (ViewModel.TopicPage != null && ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.First())
         {
             var pageNumberComboBox = this.FindControl<ComboBox>("PageNumberComboBox");
             PageNumberComboBox.SelectedIndex = PageNumberComboBox.SelectedIndex - 1;
         }
-
     }
 
     private void NextPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.Last())
+        ViewModel.ClickedPageArrow = true;
+
+        if (ViewModel.TopicPage != null && ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.Last())
         {
             var pageNumberComboBox = this.FindControl<ComboBox>("PageNumberComboBox");
             PageNumberComboBox.SelectedIndex = PageNumberComboBox.SelectedIndex + 1;
         }
+    }
+
+    private async void RetryGettingPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        await ViewModel.InitializeAsync();
     }
 }

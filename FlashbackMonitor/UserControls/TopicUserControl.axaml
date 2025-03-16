@@ -19,9 +19,11 @@
 		<StackPanel Grid.Row="0">
 			<DockPanel Margin="20">
 				<Image DockPanel.Dock="Left" VerticalAlignment="Center" Source="avares://FlashbackMonitor/Assets/backyellowmod.png" Width="32" Height="32" PointerPressed="BackImage_PointerPressed" Cursor="Hand" />
-				<TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="20 0 0 0" Text="{Binding TopicPage.TopicName}" FontSize="18" TextWrapping="Wrap" Width="640" />
-				<TextBlock DockPanel.Dock="Left" Text="{Binding LoadingText}" IsVisible="{Binding IsLoading}" VerticalAlignment="Center" Margin="10 0 0 0" />
-				<StackPanel IsVisible="{Binding !IsLoading}" Orientation="Horizontal" DockPanel.Dock="Right">
+				<TextBlock IsVisible="{Binding !IsLoading}" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="20 0 0 0" Text="{Binding TopicPage.TopicName}" FontSize="18" TextWrapping="Wrap" MaxWidth="640" />
+				<TextBlock FontWeight="Bold" DockPanel.Dock="Left" Text="{Binding LoadingText}" IsVisible="{Binding IsLoading}" VerticalAlignment="Center" Margin="20 0 0 0" />
+				<TextBlock FontWeight="Bold" DockPanel.Dock="Left" Text="Fel vid datah&#xE4;mtning :( F&#xF6;rs&#xF6;k igen!" IsVisible="{Binding ShowErrorMsg}" VerticalAlignment="Center" Margin="0 0 20 0" />
+				<Button Content="F&#xF6;rs&#xF6;k igen" Click="RetryGettingPageButton_Click" IsVisible="{Binding ShowRetryButton}" Margin="0 0 0 0"/>
+				<StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
 					<Button FontSize="14" BorderBrush="Gray" Foreground="#bbb" Height="32" CornerRadius="0" Content="&#11164;" Click="PreviousPageButton_Click"/>
 					<ComboBox x:Name="PageNumberComboBox" Margin="10 0" SelectedIndex="{Binding SelectedPageIndex}" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding TopicPage.PageNumbers}" VerticalAlignment="Center" Foreground="#bbb"/>
 					<Button FontSize="14" BorderBrush="Gray" Foreground="#bbb" Height="32" CornerRadius="0" HorizontalAlignment="Right" Content="&#11166;" Click="NextPageButton_Click"/>

@@ -15,8 +15,10 @@
 		<StackPanel Grid.Row="0">
 			<DockPanel Margin="20">
 				<Image DockPanel.Dock="Left" VerticalAlignment="Center" Source="avares://FlashbackMonitor/Assets/backyellowmod.png" Width="32" Height="32" PointerPressed="BackImage_PointerPressed" Cursor="Hand" />
-				<TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="20 0 0 0" Text="{Binding ThreadListPage.ForumName}" FontSize="18" TextWrapping="Wrap" Width="640" />
-				<TextBlock DockPanel.Dock="Left" Text="{Binding LoadingText}" IsVisible="{Binding IsLoading}" VerticalAlignment="Center" Margin="10 0 0 0" />
+				<TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="20 0 0 0" Text="{Binding ThreadListPage.ForumName}" FontSize="18" TextWrapping="Wrap" MaxWidth="640" />
+				<TextBlock FontWeight="Bold" DockPanel.Dock="Left" Text="{Binding LoadingText}" IsVisible="{Binding IsLoading}" VerticalAlignment="Center" Margin="10 0 0 0" />
+				<TextBlock FontWeight="Bold" DockPanel.Dock="Left" Text="Fel vid datah&#xE4;mtning :( F&#xF6;rs&#xF6;k igen!" IsVisible="{Binding ShowErrorMsg}" VerticalAlignment="Center" Margin="0 0 20 0" />
+				<Button Content="F&#xF6;rs&#xF6;k igen" Click="RetryGettingThreadsButton_Click" IsVisible="{Binding ShowRetryButton}" Margin="0 0 0 0" />
 			</DockPanel>
 			<Separator Background="#c3870e" Height="5" Margin="22 0 22 10"/>
 		</StackPanel>

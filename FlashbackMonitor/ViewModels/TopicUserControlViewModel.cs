@@ -57,18 +57,40 @@ namespace FlashbackMonitor.ViewModels
             }
         }
 
+        private bool _showRetryButton;
+        private bool _clickedPageArrow;
+
+        public bool ShowRetryButton
+        {
+            get => _showRetryButton;
+            set => this.RaiseAndSetIfChanged(ref _showRetryButton, value);
+        }
+
+        public bool ClickedPageArrow
+        {
+            get => _clickedPageArrow;
+            set => this.RaiseAndSetIfChanged(ref _clickedPageArrow, value);
+        }
+
+        private bool _showErrorMsg;
+        public bool ShowErrorMsg
+        {
+            get => _showErrorMsg;
+            set => this.RaiseAndSetIfChanged(ref _showErrorMsg, value);
+        }
+
         public TopicUserControlViewModel() { }
 
         public async Task InitializeAsync()
         {
-            MessageLoadingCount = 1;
-
-        load:
             try
             {
+                ShowErrorMsg = false;
+
                 IsLoading = true;
-                
-                LoadingText = $"Hämtar data... (försök {MessageLoadingCount})";
+                ShowRetryButton = false;
+
+                LoadingText = $"Hämtar data...";
 
                 TopicPage = await _flashbackService.GetTopicPageAsync(TopicUrl);
                 
@@ -78,9 +100,12 @@ namespace FlashbackMonitor.ViewModels
             }
             catch
             {
-                await Task.Delay(10000);
-                MessageLoadingCount++;
-                goto load;
+                IsLoading = false;
+                
+                if (!ClickedPageArrow)
+                    ShowRetryButton = true;
+
+                ShowErrorMsg = true;
             }
         }
     }

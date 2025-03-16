@@ -55,4 +55,9 @@ public partial class ThreadListUserControl : UserControl
             }
         }
     }
+
+    private async void RetryGettingThreadsButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        await ViewModel.InitializeAsync();
+    }
 }
