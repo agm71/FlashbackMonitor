@@ -18,7 +18,7 @@
 				<TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="20 0 0 0" Text="{Binding ThreadListPage.ForumName}" FontSize="18" TextWrapping="Wrap" Width="640" />
 				<TextBlock DockPanel.Dock="Left" Text="{Binding LoadingText}" IsVisible="{Binding IsLoading}" VerticalAlignment="Center" Margin="10 0 0 0" />
 			</DockPanel>
-			<Separator Background="#cc9d42" Height="5" Margin="22 0 22 10"/>
+			<Separator Background="#c3870e" Height="5" Margin="22 0 22 10"/>
 		</StackPanel>
 		<Border Grid.Row="1" BorderBrush="#2f2e2e" BorderThickness="1" Margin="22 20" VerticalAlignment="Stretch">
 			<ScrollViewer x:Name="SV" VerticalScrollBarVisibility="Visible" VerticalAlignment="Top">

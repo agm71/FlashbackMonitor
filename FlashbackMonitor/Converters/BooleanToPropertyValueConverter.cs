@@ -51,7 +51,7 @@ namespace FlashbackMonitor.Converters
                             : "Gray";
                     case "pinnedthread":
                         return boolean
-                            ? "Black"
+                            ? "#0a0a0a"
                             : "#191818";
                 }
             }

@@ -56,7 +56,7 @@
 														</Border>
 
 														<StackPanel Background="#191818" Grid.Column="1">
-															<TextBlock  Padding="10 10 20 5"  Text="{Binding TopicName}" Tag="{Binding TopicUrl}" PointerPressed="TextBlock_PointerPressed" Cursor="Hand" FontWeight="Bold" TextWrapping="Wrap" />
+															<TextBlock  Padding="10 10 20 5" Text="{Binding TopicName}" Tag="{Binding TopicUrl}" PointerPressed="TextBlock_PointerPressed" Cursor="Hand" FontWeight="Bold" TextWrapping="Wrap" />
 															<StackPanel Orientation="Horizontal">
 																<TextBlock Padding="10 0 0 0" Text="Av " />
 																<TextBlock Padding="0 0 0 0" Text="{Binding UserName}" Foreground="#cc9d42" />

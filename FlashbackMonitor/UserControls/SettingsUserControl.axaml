@@ -20,7 +20,7 @@
 					<Image DockPanel.Dock="Left" VerticalAlignment="Center" Source="avares://FlashbackMonitor/Assets/backyellowmod.png" Width="32" Height="32" PointerPressed="ButtonCancel_Click" Cursor="Hand" />
 					<TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="20 0 0 0" Text="Inställningar" FontSize="18" TextWrapping="Wrap" />
 				</DockPanel>
-				<Separator Background="#cc9d42" Height="5" Margin="22 0 22 10"/>
+				<Separator Background="#c3870e" Height="5" Margin="22 0 22 10"/>
 			</StackPanel>
 			<StackPanel Grid.Row="1" Grid.Column="0" Margin="20">
 				<Border
@@ -65,7 +65,7 @@
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
 										<StackPanel Orientation="Horizontal" Margin="10 0 0 0">
-											<TextBox Watermark="Ange trådrubrik" Margin="0 0 5 5" Width="320" Text="{Binding TopicName}" Foreground="#bbb" />
+											<TextBox Watermark="Ange trådrubrik" Margin="0 0 5 5" Width="300" Text="{Binding TopicName}" Foreground="#bbb" />
 											<TextBlock ToolTip.Tip="Ange som favorittråd" Foreground="{Binding IsFavoriteTopic, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='favoritetopic'}" Margin="5 5 0 0" FontSize="20" Text="&#9733;" PointerPressed="TextBlockFavoriteThread_PointerPressed" Tag="{Binding TopicName}" Cursor="Hand"></TextBlock>
 											<Image ToolTip.Tip="Ta bort tråd" Tag="{Binding TopicName}" PointerPressed="DeleteThreadImage_PointerPressed" Margin="10 -5 0 0" Source="avares://FlashbackMonitor/Assets/delete.png" Width="20" Height="20" Cursor="Hand" />
 										</StackPanel>
@@ -91,7 +91,7 @@
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
 										<StackPanel Orientation="Horizontal" Margin="10 0 0 0">
-											<TextBox Watermark="Ange användarnamn" Foreground="#bbb" Background="Transparent" Margin="0 0 5 5" Width="260" Text="{Binding UserName}" />
+											<TextBox Watermark="Ange användarnamn" Foreground="#bbb" Background="Transparent" Margin="0 0 5 5" Width="240" Text="{Binding UserName}" />
 											<TextBlock ToolTip.Tip="Ange som favoritanvändare" Foreground="{Binding Favorite, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='favoriteuser'}" Margin="5 5 0 0" FontSize="20" Text="&#9733;" PointerPressed="TextBlockFavoriteUser_PointerPressed" Tag="{Binding UserName}" Cursor="Hand"></TextBlock>
 											<Image ToolTip.Tip="Visa endast aviseringar när inlägg skrivits av den här användaren" Tag="{Binding UserName}" PointerPressed="VIPUserImage_PointerPressed" Margin="10 -5 0 0" Source="{Binding VipUser, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='vipuser'}" Width="20" Height="20" Cursor="Hand" />
 											<Image ToolTip.Tip="Visa inte aviseringar när inlägg skrivits av den här användaren" Tag="{Binding UserName}" PointerPressed="IgnoreUserImage_PointerPressed" Margin="10 -5 0 0" Source="{Binding IgnoredUser, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='ignoreduser'}" Width="20" Height="20" Cursor="Hand" />

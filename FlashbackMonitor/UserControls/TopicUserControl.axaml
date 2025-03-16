@@ -27,16 +27,17 @@
 					<Button FontSize="14" BorderBrush="Gray" Foreground="#bbb" Height="32" CornerRadius="0" HorizontalAlignment="Right" Content="&#11166;" Click="NextPageButton_Click"/>
 				</StackPanel>
 			</DockPanel>
-			<Separator Background="#cc9d42" Height="5" Margin="22 0 22 10"/>
+			<Separator Background="#c3870e" Height="5" Margin="22 0 22 10"/>
 		</StackPanel>
-		<ScrollViewer x:Name="SV" VerticalScrollBarVisibility="Visible" VerticalAlignment="Top" Grid.Row="1">
+		<ScrollViewer x:Name="SV" VerticalScrollBarVisibility="Visible" VerticalAlignment="Top"  Grid.Row="1">
+			<Border Margin="20 0 20 0" BorderBrush="#2f2e2e" BorderThickness="1 0 1 1">
 			<ItemsControl Name="postitems" ItemsSource="{Binding TopicPage.PostItems}">
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<Border BorderBrush="#2f2e2e" BorderThickness="1" Margin="20 0 20 20">
+						<Border BorderBrush="#2f2e2e" BorderThickness="0 0 0 0">
 							<Grid ColumnDefinitions="180, *" RowDefinitions="*,*" Background="#191818">
 								<StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Background="#0a0a0a" Margin="0 0 0 20">
-									<Border BorderBrush="#2f2e2e" BorderThickness="0 0 0 1">
+									<Border BorderBrush="#2f2e2e" BorderThickness="0 1 0 1">
 										<TextBlock Text="{Binding PostDate}" Padding="25 10" Foreground="Gray"/>
 									</Border>
 								</StackPanel>
@@ -204,6 +205,7 @@
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
+				</Border>
 		</ScrollViewer>
 	</Grid>
 </UserControl>
