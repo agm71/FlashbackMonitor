@@ -58,18 +58,11 @@ namespace FlashbackMonitor.ViewModels
         }
 
         private bool _showRetryButton;
-        private bool _clickedPageArrow;
 
         public bool ShowRetryButton
         {
             get => _showRetryButton;
             set => this.RaiseAndSetIfChanged(ref _showRetryButton, value);
-        }
-
-        public bool ClickedPageArrow
-        {
-            get => _clickedPageArrow;
-            set => this.RaiseAndSetIfChanged(ref _clickedPageArrow, value);
         }
 
         private bool _showErrorMsg;
@@ -101,9 +94,7 @@ namespace FlashbackMonitor.ViewModels
             catch
             {
                 IsLoading = false;
-                
-                if (!ClickedPageArrow)
-                    ShowRetryButton = true;
+                ShowRetryButton = true;
 
                 ShowErrorMsg = true;
             }

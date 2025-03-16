@@ -196,8 +196,6 @@ public partial class TopicUserControl : UserControl
 
     private void PreviousPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        ViewModel.ClickedPageArrow = true;
-
         if (ViewModel.TopicPage != null && ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.First())
         {
             var pageNumberComboBox = this.FindControl<ComboBox>("PageNumberComboBox");
@@ -207,8 +205,6 @@ public partial class TopicUserControl : UserControl
 
     private void NextPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        ViewModel.ClickedPageArrow = true;
-
         if (ViewModel.TopicPage != null && ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.Last())
         {
             var pageNumberComboBox = this.FindControl<ComboBox>("PageNumberComboBox");
