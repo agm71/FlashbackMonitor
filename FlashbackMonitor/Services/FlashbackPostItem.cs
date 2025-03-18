@@ -69,9 +69,13 @@ namespace FlashbackMonitor.Services
     public class FlashbackPostItem
     {
         public string Author { get; set; }
+        public string UserAvatar { get; set; }
         public string UserRegistration { get; set; }
         public string UserPosts { get; set; }
         public string PostDate { get; set; }
+        public string UserType { get; set; }
+        public string OnlineStatus { get; set; }
+        public string OnlineStatusColor { get; set; }
         public List<ITextContainer> TextContainers { get; set; } = [];
     }
 

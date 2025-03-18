@@ -37,6 +37,7 @@ public partial class TopicUserControl : UserControl
         DataContext = ViewModel;
         TopicUrl = topicUrl;
         From = from;
+        ViewModel.From = From;
     }
 
     protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)

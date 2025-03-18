@@ -262,7 +262,15 @@ namespace FlashbackMonitor.ViewModels
             await _settingsService.SaveSettingsAsync(this);
             _settings = await _settingsService.GetSettingsAsync();
             Interval = _settings.Interval;
-            cancellationTokenSource.Cancel();
+
+            try
+            {
+                cancellationTokenSource?.Cancel();
+            }
+            catch
+            {
+            }
+
             ApplyFilter();
         }
 

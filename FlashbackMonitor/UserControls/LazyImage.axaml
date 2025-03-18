@@ -1,0 +1,11 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:FlashbackMonitor">
+  <ControlTheme x:Key="{x:Type controls:LazyImage}" TargetType="controls:LazyImage">
+    <Setter Property="Template">
+      <ControlTemplate>
+		  <Image MaxWidth="100" MaxHeight="100" HorizontalAlignment="Left" Source="{Binding ImageSource, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+</ResourceDictionary>

@@ -48,9 +48,8 @@ namespace FlashbackMonitor
             }
             else if (TextKind == TextKind.Bullet)
             {
-                Foreground = new SolidColorBrush(Color.Parse("Green"));
-                FontSize = 18;
-                LineHeight = 10;
+                FontSize = 16;
+                LineHeight = 14;
             }
             
             base.ApplyTemplate();

@@ -49,10 +49,7 @@ namespace FlashbackMonitor.Utils
             foreach (HtmlNode postN in postNodes)
             {
                 var postRow = postN.SelectSingleNode(".//div[contains(@class, 'post-row')]");
-
-                var postDateRaw = postN.SelectSingleNode(".//div[contains(@class, 'post-heading')]")?.InnerText?.Trim();
-
-                var postDate = FlashbackRegexes.PostDateRegex().Match(postDateRaw)?.Value;
+                var postDate = FlashbackRegexes.PostDateRegex().Match(postN.SelectSingleNode(".//div[contains(@class, 'post-heading')]")?.InnerText?.Trim())?.Value;
 
                 FlashbackPostItem post = new()
                 {
@@ -60,8 +57,13 @@ namespace FlashbackMonitor.Utils
                     UserRegistration = postRow.SelectSingleNode(".//div[contains(@class, 'post-user-info')]//div")?.InnerText?.Trim(),
                     UserPosts = HttpUtility.HtmlDecode(postRow.SelectSingleNode(".//div[contains(@class, 'post-user-info')]//div[2]")?.InnerText?.Trim()),
                     PostDate = HttpUtility.HtmlDecode(postDate),
+                    UserAvatar = postN.SelectSingleNode(".//a[contains(@class, 'post-user-avatar')]//img")?.Attributes["src"]?.Value?.Trim(),
+                    UserType = postRow.SelectSingleNode(".//div[contains(@class, 'post-user-title')]")?.InnerText?.Trim(),
+                    OnlineStatus = postRow.SelectSingleNode(".//div[contains(@class, 'post-user-title')]//i[contains(@class, 'fa fa-circle')]")?.GetAttributeValue("title", "Okänd status") ?? "Okänd status",
                 };
 
+                post.OnlineStatusColor = GetColorFromOnlineStatus(post.OnlineStatus);
+                
                 var textContainer = new TextContainer();
 
                 foreach (var node in postRow.SelectSingleNode(".//div[contains(@class, 'post_message')]")?.ChildNodes)
@@ -194,6 +196,16 @@ namespace FlashbackMonitor.Utils
             }
 
             return topicsPage;
+        }
+
+        private static string GetColorFromOnlineStatus(string onlineStatus)
+        {
+            return onlineStatus switch
+            {
+                "online" => "#009000",
+                "offline" => "#900000",
+                _ => "#ccc",
+            };
         }
 
         private static void ParseUnorderedList(List<ITextContainer> textContainers, HtmlNode node)

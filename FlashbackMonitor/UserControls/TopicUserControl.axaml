@@ -9,6 +9,8 @@
 			 xmlns:local2="clr-namespace:FlashbackMonitor;assembly=FlashbackMonitor"
 			 xmlns:monitor="clr-namespace:FlashbackMonitor.Services;assembly=FlashbackMonitor"
              x:Class="FlashbackMonitor.TopicUserControl"
+			 xmlns:loc="clr-namespace:FlashbackMonitor;assembly=FlashbackMonitor"
+			 xmlns:localt="clr-namespace:FlashbackMonitor;assembly=FlashbackMonitor"
 			 FontSize="12">
 	<UserControl.Resources>
 		<ResourceDictionary>
@@ -44,9 +46,16 @@
 									</Border>
 								</StackPanel>
 								<StackPanel Width="170" Orientation="Vertical" Grid.Row="1" Grid.Column="0" MinHeight="100">
-									<TextBlock Text="{Binding Author}" Foreground="#cc9d42" Padding="20 0 0 0" />
-									<TextBlock Text="{Binding UserRegistration}" Padding="20 0 0 0" />
-									<TextBlock Text="{Binding UserPosts}" Padding="20 0 0 0" />
+									<StackPanel Orientation="Horizontal">
+										<TextBlock Text="{Binding Author}" Foreground="#cc9d42" Padding="20 0 5 0" />
+										<TextBlock Text="&#x25CF;" FontSize="10" VerticalAlignment="Center" ToolTip.Tip="{Binding OnlineStatus}" Foreground="{Binding OnlineStatusColor}" />
+									</StackPanel>
+
+
+									<TextBlock Text="{Binding UserType}" Padding="20 0 0 0" />
+									<loc:LazyImage ImageUrl="{Binding UserAvatar}" From="{Binding $parent[local2:TopicUserControl].((vm:TopicUserControlViewModel)DataContext).From}" Margin="20 10 0 0" />
+									<TextBlock Text="{Binding UserRegistration}" Padding="20 10 10 0" />
+									<TextBlock Text="{Binding UserPosts}" Padding="20 0 0 20" />
 								</StackPanel>
 								<StackPanel Grid.Row="1" Grid.Column="1" Margin="0 0 20 20">
 									<ItemsControl ItemsSource="{Binding TextContainers}">
