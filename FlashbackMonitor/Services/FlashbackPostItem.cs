@@ -18,6 +18,7 @@ namespace FlashbackMonitor.Services
         string AdditionalData { get; set; }
         List<QuoteContainerCollection> QuoteContainerCollections { get; set; }
         List<SpoilerContainerCollection> SpoilerContainerCollections { get; set; }
+        List<CodeContainerCollection> CodeContainerCollections { get; set; }
     }
     #endregion
 
@@ -52,10 +53,22 @@ namespace FlashbackMonitor.Services
         }
 
         public ObservableCollection<ThreadItem> ThreadItems { get; set; } = [];
+        public ObservableCollection<ForumItem> SubForums { get; set; } = [];
+    }
+
+    public class ForumItem
+    {
+        public string ForumName { get; set; }
+        public string ForumUrl { get; set; }
+        public string TopicName { get; set; }
+        public string TopicUrl { get; set; }
+        public string LastPostUserName { get; set; }
+        public string LastPostDate { get; set; }
     }
 
     public class ThreadItem
     {
+        public int Index { get; set; }
         public string Author { get; set; }
         public string LastPostUserName { get; set; }
         public string TopicUrl { get; set; }
@@ -86,6 +99,7 @@ namespace FlashbackMonitor.Services
         public string AdditionalData { get; set; }
         public List<QuoteContainerCollection> QuoteContainerCollections { get; set; } = [];
         public List<SpoilerContainerCollection> SpoilerContainerCollections { get; set; } = [];
+        public List<CodeContainerCollection> CodeContainerCollections { get; set; } = [];
     }
 
     public class QuoteContainerCollection
@@ -97,6 +111,11 @@ namespace FlashbackMonitor.Services
     public class SpoilerContainerCollection
     {
         public List<ITextContainer> SpoilerContainers { get; set; } = [];
+    }
+
+    public class CodeContainerCollection
+    {
+        public List<ITextContainer> CodeContainers { get; set; } = [];
     }
 
     public class QuoteTextContainer : ITextContainer
@@ -116,9 +135,15 @@ namespace FlashbackMonitor.Services
         public string AdditionalData { get; set; }
         public List<SpoilerContainerCollection> SpoilerContainerCollections { get; set; } = [];
         public List<QuoteContainerCollection> QuoteContainerCollections { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public List<CodeContainerCollection> CodeContainerCollections { get; set; } = [];
     }
 
     public class SpoilerTextContainer : ITextContainer
+    {
+        public List<ITextItem> TextItems { get; set; } = [];
+    }
+
+    public class CodeTextContainer : ITextContainer
     {
         public List<ITextItem> TextItems { get; set; } = [];
     }
@@ -128,8 +153,9 @@ namespace FlashbackMonitor.Services
         public string Text { set; get; }
         public TextKind Kind { get; set; }
         public string AdditionalData { get; set; }
-        public List<QuoteContainerCollection> QuoteContainerCollections { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public List<QuoteContainerCollection> QuoteContainerCollections { get; set; } = [];
         public List<SpoilerContainerCollection> SpoilerContainerCollections { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public List<CodeContainerCollection> CodeContainerCollections { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     }
 
     public enum TextKind
@@ -139,6 +165,8 @@ namespace FlashbackMonitor.Services
         Italic,
         Bold,
         LineBreak,
-        Bullet
+        Bullet,
+        Code,
+        Smiley
     }
 }

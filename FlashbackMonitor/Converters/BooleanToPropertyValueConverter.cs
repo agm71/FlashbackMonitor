@@ -1,6 +1,8 @@
-﻿using Avalonia.Data.Converters;
+﻿using Avalonia;
+using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Styling;
 using FlashbackMonitor.Services;
 using System;
 using System.Globalization;
@@ -25,6 +27,36 @@ namespace FlashbackMonitor.Converters
                 }
             }
 
+            if (value is ThreadItem threadItem)
+            {
+                Application.Current.TryGetResource("TopicList_Item_Even_Background", Application.Current.ActualThemeVariant, out var evenBackground);
+                Application.Current.TryGetResource("TopicList_Item_Odd_Background", Application.Current.ActualThemeVariant, out var oddBackground);
+                Application.Current.TryGetResource("TopicList_Item_Pinned_Background", Application.Current.ActualThemeVariant, out var pinnedBackground);
+
+                if (Application.Current!.ActualThemeVariant == ThemeVariant.Light)
+                {
+                    if (threadItem.PinnedThread)
+                    {
+                        return pinnedBackground;
+                    }
+                    else
+                    {
+                        return threadItem.Index % 2 == 0 ? evenBackground : oddBackground;
+                    }
+                }
+                else
+                {
+                    if (threadItem.PinnedThread)
+                    {
+                        return pinnedBackground;
+                    }
+                    else
+                    {
+                        return threadItem.Index % 2 == 0 ? evenBackground : oddBackground;
+                    }
+                }
+            }
+
             if (value is bool boolean)
             {
                 switch (type)
@@ -45,14 +77,6 @@ namespace FlashbackMonitor.Converters
                         return boolean
                             ? "#f99404"
                             : "Gray";
-                    case "forumname":
-                        return boolean
-                            ? "#cc9d42"
-                            : "Gray";
-                    case "pinnedthread":
-                        return boolean
-                            ? "#0a0a0a"
-                            : "#191818";
                 }
             }
 

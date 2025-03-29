@@ -6,6 +6,111 @@
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 	<Application.Resources>
 		<ResourceDictionary>
+
+			<ResourceDictionary.ThemeDictionaries>
+				<ResourceDictionary x:Key='Light'>
+					<FontWeight x:Key="Global_FontWeight">Medium</FontWeight>
+					<SolidColorBrush x:Key='WindowBackground'>#fff</SolidColorBrush>
+					<SolidColorBrush x:Key='WindowForeground'>#000</SolidColorBrush>
+					<SolidColorBrush x:Key='UserNameForeground'>#000</SolidColorBrush>
+					
+					<!--Forum list-->
+					<SolidColorBrush x:Key="ForumList_Topic_Subline">#444</SolidColorBrush>
+					<SolidColorBrush x:Key='ForumList_Header_Background'>#333</SolidColorBrush>
+					<SolidColorBrush x:Key='ForumList_Header_Foreground'>#f0f0f0</SolidColorBrush>
+					<SolidColorBrush x:Key='ForumList_ForumName_Background'>#eff0f1</SolidColorBrush>
+					<SolidColorBrush x:Key='ForumList_TopicName_Background'>#e3e3e3</SolidColorBrush>
+					<Thickness x:Key="ForumList_HeaderBottomBorderThickness">0,0,0,3</Thickness>
+					<SolidColorBrush x:Key='BorderBrush'>#b8c0c7</SolidColorBrush>
+					
+					<!--Separator-->
+					<SolidColorBrush x:Key='Separator_Background'>#eff0f1</SolidColorBrush>
+
+					<!--Notifications-->
+					<SolidColorBrush x:Key='NotificationAreaBackground'>#eff0f1</SolidColorBrush>
+
+					<!--Topic list-->
+					<SolidColorBrush x:Key='TopicList_TopicName_Foreground'>#222</SolidColorBrush>
+					<SolidColorBrush x:Key='TopicList_Item_Even_Background'>#f9f9f9</SolidColorBrush>
+					<SolidColorBrush x:Key='TopicList_Item_Odd_Background'>#fff</SolidColorBrush>
+					<SolidColorBrush x:Key='TopicList_Item_Pinned_Background'>#fcf8e3</SolidColorBrush>
+					
+					<!--Post-->
+					<SolidColorBrush x:Key='Post_Header_Background'>#ccc</SolidColorBrush>
+					<SolidColorBrush x:Key='Post_Header_Foreground'>#333</SolidColorBrush>
+					<SolidColorBrush x:Key='Post_Background'>#eff0f1</SolidColorBrush>
+					<SolidColorBrush x:Key='Post_Left_Background'>#e3e3e3</SolidColorBrush>
+					
+					<!--Citat-->
+					<SolidColorBrush x:Key='QuoteBodyBackground'>#e3e3e3</SolidColorBrush>
+					
+					<!--Settings Page-->
+					<SolidColorBrush x:Key='ForumItem_Foreground'>#000</SolidColorBrush>
+					<SolidColorBrush x:Key='ForumItem_Selected_Foreground'>#000</SolidColorBrush>
+					
+					<!--Context Menu-->
+					<SolidColorBrush x:Key='ContextMenu_Background'>#eff0f1</SolidColorBrush>
+					<SolidColorBrush x:Key='ContextMenu_BorderBrush'>#b8c0c7</SolidColorBrush>
+					<SolidColorBrush x:Key='ContextMenu_Foreground'>#000</SolidColorBrush>
+					
+					<!--Underline (Används bara av det ljusa temat)-->
+					<TextDecorationCollection x:Key="UnderlineDecoration">
+						<TextDecoration Location="Underline"/>
+					</TextDecorationCollection>
+				</ResourceDictionary>
+
+				<!--////////// MÖRKT TEMA //////////-->
+				<ResourceDictionary x:Key='Dark'>
+					<FontWeight x:Key="Global_FontWeight">Regular</FontWeight>
+					<SolidColorBrush x:Key='WindowBackground'>#000</SolidColorBrush>
+					<SolidColorBrush x:Key='WindowForeground'>#B0B0B0</SolidColorBrush>
+					<SolidColorBrush x:Key='UserNameForeground'>#bf975b</SolidColorBrush>
+
+					<EllipseGeometry x:Key="CircularImageClip" Rect="0,0,80,80"/>
+					
+					<!--Forum list-->
+					<SolidColorBrush x:Key="ForumList_Topic_Subline">#B0B0B0</SolidColorBrush>
+					<SolidColorBrush x:Key='ForumList_Header_Background'>#121012</SolidColorBrush>
+					<SolidColorBrush x:Key='ForumList_Header_Foreground'>#f0f0f0</SolidColorBrush>
+					<SolidColorBrush x:Key='ForumList_ForumName_Background'>#1c1a1b</SolidColorBrush>
+					<SolidColorBrush x:Key='ForumList_TopicName_Background'>#141314</SolidColorBrush>
+					<Thickness x:Key="ForumList_HeaderBottomBorderThickness">0,1,0,0</Thickness>
+					<SolidColorBrush x:Key='BorderBrush'>#272727</SolidColorBrush>
+
+					<!--Separator-->
+					<SolidColorBrush x:Key='Separator_Background'>#bf975b</SolidColorBrush>
+
+					<!--Notifications-->
+					<SolidColorBrush x:Key='NotificationAreaBackground'>#141314</SolidColorBrush>
+
+					<!--Topic list-->
+					<SolidColorBrush x:Key='TopicList_TopicName_Foreground'>#c4c2c3</SolidColorBrush>
+					<SolidColorBrush x:Key='TopicList_Item_Even_Background'>#121212</SolidColorBrush>
+					<SolidColorBrush x:Key='TopicList_Item_Odd_Background'>#121212</SolidColorBrush>
+					<SolidColorBrush x:Key='TopicList_Item_Pinned_Background'>#171516</SolidColorBrush>
+
+					<!--Post-->
+					<SolidColorBrush x:Key='Post_Header_Background'>#121012</SolidColorBrush>
+					<SolidColorBrush x:Key='Post_Header_Foreground'>#afadae</SolidColorBrush>
+					<SolidColorBrush x:Key='Post_Background'>#1c1a1b</SolidColorBrush>
+					<SolidColorBrush x:Key='Post_Left_Background'>#141314</SolidColorBrush>
+					
+					<!--Citat-->
+					<SolidColorBrush x:Key='QuoteBodyBackground'>#141314</SolidColorBrush>
+
+					<!--Settings Page-->
+					<SolidColorBrush x:Key='ForumItem_Foreground'>#c1bdbd</SolidColorBrush>
+					<SolidColorBrush x:Key='ForumItem_Selected_Foreground'>#dd58b9</SolidColorBrush>
+
+					<!--Context Menu-->
+					<SolidColorBrush x:Key='ContextMenu_Background'>#121212</SolidColorBrush>
+					<SolidColorBrush x:Key='ContextMenu_BorderBrush'>#b8c0c7</SolidColorBrush>
+					<SolidColorBrush x:Key='ContextMenu_Foreground'>#B0B0B0</SolidColorBrush>
+				</ResourceDictionary>
+
+
+			</ResourceDictionary.ThemeDictionaries>
+
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceInclude Source="/UserControls/LazyImage.axaml" />
 			</ResourceDictionary.MergedDictionaries>

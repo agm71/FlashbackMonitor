@@ -15,13 +15,6 @@ namespace FlashbackMonitor.ViewModels
             set => this.RaiseAndSetIfChanged(ref _topicUrl, value);
         }
 
-        public string _from;
-        public string From
-        {
-            get => _from;
-            set => this.RaiseAndSetIfChanged(ref _from, value);
-        }
-
         public bool FirstRun { get; set; } = true;
 
         private bool _isLoading;

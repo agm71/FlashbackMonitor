@@ -18,7 +18,8 @@ namespace FlashbackMonitor.Services
                 Forums = [],
                 Topics = [],
                 Users = [],
-                Interval = 10
+                Interval = 10,
+                Theme = "Dark"
             };
 
             using FileStream fs = new(SettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
@@ -47,7 +48,8 @@ namespace FlashbackMonitor.Services
                 Forums = viewModel.ForumItems.Where(x => x.IsChecked).Select(x => x.Name).ToList(),
                 Topics = [.. viewModel.Topics.Where(t => !string.IsNullOrWhiteSpace(t.TopicName))],
                 Users = [.. viewModel.Users.Where(u => !string.IsNullOrWhiteSpace(u.UserName))],
-                Interval = viewModel.Interval
+                Interval = viewModel.Interval,
+                Theme = viewModel.Theme
             };
 
             using FileStream fs = new(SettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
@@ -61,7 +63,8 @@ namespace FlashbackMonitor.Services
                 Forums = viewModel.ForumItems.Where(x => x.IsChecked).Select(x => x.Name).ToList(),
                 Topics = [.. viewModel.Topics.Where(t => !string.IsNullOrWhiteSpace(t.TopicName))],
                 Users = [.. viewModel.Users.Where(u => !string.IsNullOrWhiteSpace(u.UserName))],
-                Interval = viewModel.Interval
+                Interval = viewModel.Interval,
+                Theme = viewModel.Theme
             };
 
             using FileStream fs = new(SettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
@@ -75,7 +78,8 @@ namespace FlashbackMonitor.Services
                 Forums = [],
                 Topics = [],
                 Users = [],
-                Interval = 10
+                Interval = 10,
+                Theme = "Dark"
             };
 
             using FileStream fs = new(SettingsFilePath, FileMode.Create, FileAccess.Write, FileShare.None);

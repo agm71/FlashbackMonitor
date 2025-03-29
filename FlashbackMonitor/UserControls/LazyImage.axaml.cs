@@ -30,6 +30,9 @@ public class LazyImage : TemplatedControl
     public static readonly StyledProperty<string> FromProperty =
         AvaloniaProperty.Register<LazyImage, string>(nameof(From));
 
+    public static readonly StyledProperty<string> TopicUrlProperty =
+        AvaloniaProperty.Register<LazyImage, string>(nameof(TopicUrl));
+
     public string ImageUrl
     {
         get => GetValue(ImageUrlProperty);
@@ -58,6 +61,12 @@ public class LazyImage : TemplatedControl
     {
         get => GetValue(FromProperty);
         set => SetValue(FromProperty, value);
+    }
+
+    public string TopicUrl
+    {
+        get => GetValue(TopicUrlProperty);
+        set => SetValue(TopicUrlProperty, value);
     }
 
     private CancellationTokenSource _cancellationTokenSource;
@@ -143,7 +152,7 @@ public class LazyImage : TemplatedControl
 
         if (_parentScrollViewer != null)
         {
-            if (From == "main")
+            if (TopicUrl.EndsWith("n"))
                 _parentScrollViewer.ScrollToEnd();
             else
                 _parentScrollViewer.ScrollToHome();

@@ -19,7 +19,7 @@ namespace FlashbackMonitor
                 var mainWindow = new MainWindow
                 {
                     CanResize = false,
-                    Width = 900,
+                    Width = 1200,
                     Height = 900,
                     WindowStartupLocation = WindowStartupLocation.CenterScreen
                 };

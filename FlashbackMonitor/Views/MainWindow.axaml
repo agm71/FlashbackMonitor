@@ -8,13 +8,12 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
 		xmlns:local="using:FlashbackMonitor.Converters"
-        Title="Flashback Monitor">
-	<Window.Background>
-		<SolidColorBrush Color="#111111" />
-	</Window.Background>
-	<Window.Foreground>
-		<SolidColorBrush Color="#bbb" />
-	</Window.Foreground>
+        Title="Flashback Monitor"
+		FontSize="13"
+		Background="{DynamicResource WindowBackground}" 
+		FontWeight="{DynamicResource Global_FontWeight}"
+		Foreground="{DynamicResource WindowForeground}"
+		FontFamily="Inter">
 	<Window.Resources>
 		<ResourceDictionary>
 			<local:BooleanToPropertyValueConverter x:Key="BooleanToPropertyValueConverter" />

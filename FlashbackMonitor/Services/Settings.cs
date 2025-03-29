@@ -9,5 +9,6 @@ namespace FlashbackMonitor.Services
         public List<TopicViewModel> Topics { get; set; } = [];
         public List<UserViewModel> Users { get; set; } = [];
         public int Interval { get; set; } = 10;
+        public string Theme { get; set; }
     }
 }

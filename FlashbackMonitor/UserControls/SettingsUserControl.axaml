@@ -20,18 +20,19 @@
 					<Image DockPanel.Dock="Left" VerticalAlignment="Center" Source="avares://FlashbackMonitor/Assets/backyellowmod.png" Width="32" Height="32" PointerPressed="ButtonCancel_Click" Cursor="Hand" />
 					<TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Margin="20 0 0 0" Text="Inställningar" FontSize="18" TextWrapping="Wrap" />
 				</DockPanel>
-				<Separator Background="#c3870e" Height="5" Margin="22 0 22 10"/>
+				<Separator Background="{DynamicResource Separator_Background}" Height="5" Margin="22 0 22 10"/>
 			</StackPanel>
-			<StackPanel Grid.Row="1" Grid.Column="0" Margin="20">
+			<StackPanel Grid.Row="1" Grid.Column="0" Margin="20 20 0 0">
 				<Border
-					BorderBrush="#393941"
-					BorderThickness="2"
+					Background="{DynamicResource ForumList_ForumName_Background}"
+					BorderBrush="{DynamicResource BorderBrush}"
+					BorderThickness="1"
 					Height="750">
 					<StackPanel>
 						<TextBlock Text="Forum att prenumerera på" FontWeight="Bold" Padding="10 10 0 10" />
 						<StackPanel Orientation="Horizontal" Margin="10 0 0 0">
 							<CheckBox IsChecked="{Binding AllChecked}" />
-							<TextBlock Text="Markera/Avmarkera alla" FontWeight="Bold" Foreground="Gray" Padding="10 10 0 0" PointerPressed="TextBlockSelectAllForums_PointerPressed" />
+							<TextBlock Text="Markera/Avmarkera alla" FontWeight="Bold" Padding="10 10 0 0" PointerPressed="TextBlockSelectAllForums_PointerPressed" />
 						</StackPanel>
 						<ScrollViewer VerticalScrollBarVisibility="Visible" Height="640">
 							<ItemsControl ItemsSource="{Binding ForumItems}">
@@ -39,7 +40,7 @@
 									<DataTemplate>
 										<StackPanel Orientation="Horizontal" >
 											<CheckBox IsChecked="{Binding IsChecked}" Margin="10 10 0 0" />
-											<TextBlock Foreground="{Binding IsChecked, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='forumname'}" Text="{Binding Name}" Margin="10 20 0 0" PointerPressed="TextBlockForum_PointerPressed" PointerEntered="TextBlockForum_PointerEntered" PointerExited="TextBlockForum_PointerExited"></TextBlock>
+											<TextBlock Foreground="{DynamicResource WindowForeground}" Text="{Binding Name}" Margin="10 20 0 0" PointerPressed="TextBlockForum_PointerPressed"></TextBlock>
 										</StackPanel>
 									</DataTemplate>
 								</ItemsControl.ItemTemplate>
@@ -51,8 +52,9 @@
 			<StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1" Margin="20">
 				<!-- Topic Settings -->
 				<Border
-					BorderBrush="#393941"
-					BorderThickness="2"
+					Background="{DynamicResource ForumList_ForumName_Background}"
+					BorderBrush="{DynamicResource BorderBrush}"
+					BorderThickness="1"
 					VerticalAlignment="Stretch"
 					Margin="0 0 0 0">
 					<StackPanel Orientation="Vertical">
@@ -65,8 +67,8 @@
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
 										<StackPanel Orientation="Horizontal" Margin="10 0 0 0">
-											<TextBox Watermark="Ange trådrubrik" Margin="0 0 5 5" Width="300" Text="{Binding TopicName}" Foreground="#bbb" />
-											<TextBlock ToolTip.Tip="Ange som favorittråd" Foreground="{Binding IsFavoriteTopic, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='favoritetopic'}" Margin="5 5 0 0" FontSize="20" Text="&#9733;" PointerPressed="TextBlockFavoriteThread_PointerPressed" Tag="{Binding TopicName}" Cursor="Hand"></TextBlock>
+											<TextBox Watermark="Ange trådrubrik" Margin="0 0 5 5" Width="400" Text="{Binding TopicName}" />
+											<TextBlock ToolTip.Tip="Ange som favorittråd" Foreground="{Binding IsFavoriteTopic, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='favoritetopic'}" Margin="5 0 0 0" FontSize="20" Text="&#9733;" PointerPressed="TextBlockFavoriteThread_PointerPressed" Tag="{Binding TopicName}" Cursor="Hand"></TextBlock>
 											<Image ToolTip.Tip="Ta bort tråd" Tag="{Binding TopicName}" PointerPressed="DeleteThreadImage_PointerPressed" Margin="10 -5 0 0" Source="avares://FlashbackMonitor/Assets/delete.png" Width="20" Height="20" Cursor="Hand" />
 										</StackPanel>
 									</DataTemplate>
@@ -76,11 +78,12 @@
 					</StackPanel>
 				</Border>
 				<!-- User Settings -->
-				<Border
-					BorderBrush="#393941"
-					BorderThickness="2"
+				<Border 
+					BorderBrush="{DynamicResource BorderBrush}"
+					BorderThickness="1"
 					Height="240"
-					Margin="0 0 0 20">
+					Background="{DynamicResource ForumList_ForumName_Background}"
+					Margin="0 20 0 20">
 					<StackPanel Orientation="Vertical">
 						<StackPanel Orientation="Horizontal" Margin="10">
 							<TextBlock Text="Användare" FontWeight="Bold" />
@@ -91,8 +94,8 @@
 								<ItemsControl.ItemTemplate>
 									<DataTemplate>
 										<StackPanel Orientation="Horizontal" Margin="10 0 0 0">
-											<TextBox Watermark="Ange användarnamn" Foreground="#bbb" Background="Transparent" Margin="0 0 5 5" Width="240" Text="{Binding UserName}" />
-											<TextBlock ToolTip.Tip="Ange som favoritanvändare" Foreground="{Binding Favorite, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='favoriteuser'}" Margin="5 5 0 0" FontSize="20" Text="&#9733;" PointerPressed="TextBlockFavoriteUser_PointerPressed" Tag="{Binding UserName}" Cursor="Hand"></TextBlock>
+											<TextBox Watermark="Ange användarnamn" Margin="0 0 5 5" Width="400" Text="{Binding UserName}" />
+											<TextBlock ToolTip.Tip="Ange som favoritanvändare" Foreground="{Binding Favorite, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='favoriteuser'}" Margin="5 0 0 0" FontSize="20" Text="&#9733;" PointerPressed="TextBlockFavoriteUser_PointerPressed" Tag="{Binding UserName}" Cursor="Hand"></TextBlock>
 											<Image ToolTip.Tip="Visa endast aviseringar när inlägg skrivits av den här användaren" Tag="{Binding UserName}" PointerPressed="VIPUserImage_PointerPressed" Margin="10 -5 0 0" Source="{Binding VipUser, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='vipuser'}" Width="20" Height="20" Cursor="Hand" />
 											<Image ToolTip.Tip="Visa inte aviseringar när inlägg skrivits av den här användaren" Tag="{Binding UserName}" PointerPressed="IgnoreUserImage_PointerPressed" Margin="10 -5 0 0" Source="{Binding IgnoredUser, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='ignoreduser'}" Width="20" Height="20" Cursor="Hand" />
 											<Image ToolTip.Tip="Ta bort användare" Tag="{Binding UserName}" PointerPressed="DeleteUserImage_PointerPressed" Margin="10 -5 0 0" Source="/Assets/delete.png" Width="20" Height="20" Cursor="Hand" />
@@ -104,13 +107,21 @@
 					</StackPanel>
 				</Border>
 				<!-- Interval -->
-				<Border
-					BorderBrush="#393941"
-					BorderThickness="2"
+				<Border Background="{DynamicResource ForumList_ForumName_Background}"
+					BorderBrush="{DynamicResource BorderBrush}"
+					BorderThickness="1"
 					Height="60">
 					<StackPanel Orientation="Horizontal" Margin="10">
 						<TextBlock FontWeight="Bold" VerticalAlignment="Center" Text="Uppdateringsintervall (sekunder)" />
-						<NumericUpDown Background="Transparent" Foreground="#bbb" Height="30" Minimum="5" Increment="1" Width="130" Margin="20 0 0 0" Value="{Binding Interval}" />
+						<NumericUpDown Height="30" Minimum="5" Increment="1" Width="130" Margin="30 0 0 0" Value="{Binding Interval}" />
+					</StackPanel>
+				</Border>
+				<Border Margin="0 20 0 0" Background="{DynamicResource ForumList_ForumName_Background}"
+					BorderBrush="{DynamicResource BorderBrush}"
+					BorderThickness="1"
+					Height="100">
+					<StackPanel Orientation="Horizontal" Margin="10">
+						<ToggleSwitch FontWeight="Bold" OffContent="Ljust tema" OnContent="Mörkt tema" IsChecked="{Binding IsUsingDarkTheme}" Content="Tema" Click="ToggleSwitch_Click" />
 					</StackPanel>
 				</Border>
 			</StackPanel>

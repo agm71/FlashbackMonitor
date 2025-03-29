@@ -51,7 +51,20 @@ namespace FlashbackMonitor
                 FontSize = 16;
                 LineHeight = 14;
             }
-            
+            else if (TextKind == TextKind.Code)
+            {
+                Foreground = new SolidColorBrush(Color.Parse("#529543"));
+            }
+            else if (TextKind == TextKind.Smiley)
+            {
+                LineHeight = 16;
+            }
+
+            if (AdditionalData?.Contains("MarginBottom#") == true)
+            {
+                Margin = new Thickness(0, 0, 0, double.Parse(AdditionalData.Split('#')[1])); //= AdditionalData.Split('#')[1];
+            }
+
             base.ApplyTemplate();
         }
 

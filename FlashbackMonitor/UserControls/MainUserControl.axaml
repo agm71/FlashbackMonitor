@@ -6,61 +6,96 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 x:DataType="vm:MainWindowViewModel"
 			 xmlns:local="using:FlashbackMonitor.Converters"
-             x:Class="FlashbackMonitor.MainUserControl"
-			 FontSize="12">
+             x:Class="FlashbackMonitor.MainUserControl">
 	<UserControl.Resources>
 		<local:BooleanToPropertyValueConverter x:Key="BooleanToPropertyValueConverter" />
 	</UserControl.Resources>
 	<Grid RowDefinitions="Auto,*,Auto" Margin="20">
 		<StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right">
-			<ComboBox x:Name="ViewComboBox" SelectedIndex="{Binding SelectedTopicIndex2}" Width="150" Margin="0 0 10 0" Foreground="#bbb" SelectionChanged="ViewComboBox_SelectionChanged">
+			<ComboBox x:Name="ViewComboBox" SelectedIndex="{Binding SelectedTopicIndex2}" Width="200" Margin="0 0 10 0" SelectionChanged="ViewComboBox_SelectionChanged">
 				<ComboBoxItem Content="Vy: Aviseringar" />
 				<ComboBoxItem Content="Vy: Forumöversikt" />
 			</ComboBox>
-			<TextBox x:Name="SearchTextBox" Watermark="Sök..." Width="160" Margin="0 0 10 0" Text="{Binding SearchText}" Foreground="#bbb" />
-			<ComboBox x:Name="NotificationsFilterComboBox" Width="300" Margin="0 0 10 0" SelectedIndex="{Binding SelectedTopicIndex}" Foreground="#bbb">
+			<TextBox x:Name="SearchTextBox" Watermark="Sök..." Width="320" Margin="0 0 10 0" Text="{Binding SearchText}"/>
+			<ComboBox x:Name="NotificationsFilterComboBox" Width="320" Margin="0 0 10 0" SelectedIndex="{Binding SelectedTopicIndex}">
 				<ComboBoxItem Content="Alla aviseringar" />
 				<ComboBoxItem Content="Prenumererade trådar" />
 				<ComboBoxItem Content="Prenumererade trådar (Favoriter)" />
 				<ComboBoxItem Content="Prenumererade forum" />
 				<ComboBoxItem Content="Prenumererade forum + prenumererade trådar" />
 			</ComboBox>
-			<ComboBox x:Name="UsersFilterComboBox" Width="160" Margin="0 0 10 0" SelectedIndex="{Binding SelectedUserIndex}" Foreground="#bbb">
+			<ComboBox x:Name="UsersFilterComboBox" Width="230" Margin="0 0 10 0" SelectedIndex="{Binding SelectedUserIndex}">
 				<ComboBoxItem Content="Alla användare" />
 				<ComboBoxItem Content="Favoritanvändare" />
 			</ComboBox>
 			<Image Source="avares://FlashbackMonitor/Assets/settingsyellow.png" Width="32" Height="32" Cursor="Hand" PointerPressed="SettingsImage_PointerPressed" />
 		</StackPanel>
-		<Border Grid.Row="1" BorderBrush="#2f2e2e" CornerRadius="1" BorderThickness="1" Margin="0 40 0 20">
+		<Border Grid.Row="1" BorderBrush="{DynamicResource BorderBrush}" CornerRadius="1" BorderThickness="1" Margin="0 40 0 20">
 			<ScrollViewer x:Name="SV" VerticalScrollBarVisibility="Visible">
-				<StackPanel Background="#191818">
+				<StackPanel Background="{DynamicResource NotificationAreaBackground}">
 					<ItemsControl x:Name="ForumOverviewItemsControl" ItemsSource="{Binding CategoryWithForums}" IsVisible="{Binding ShowOverviewView}">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
 								<StackPanel Margin="0 0 0 0">
-									<Border BorderBrush="#2f2e2e" BorderThickness="0 0 0 0">
-										<Border BorderBrush="{Binding ForumColor}" BorderThickness="0 0 0 3">
-											<StackPanel Background="#0a0a0a" Orientation="Horizontal">
-												<TextBlock Text="&#x25CF;" FontSize="16" Foreground="{Binding ForumColor}" VerticalAlignment="Center" Padding="10 0 0 0" />
-												<TextBlock Padding="10" Text="{Binding Category}"/>
-											</StackPanel>
-										</Border>
+									<Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+										<StackPanel Background="{DynamicResource ForumList_Header_Background}" Orientation="Horizontal">
+											<TextBlock Text="&#x25CF;" FontSize="16" Foreground="{Binding ForumColor}" VerticalAlignment="Center" Padding="10 0 0 0" />
+											<TextBlock Padding="10" Text="{Binding Category}" Foreground="{DynamicResource ForumList_Header_Foreground}"/>
+										</StackPanel>
 									</Border>
+
 									<ItemsControl ItemsSource="{Binding Notifications}">
 										<ItemsControl.ItemTemplate>
 											<DataTemplate>
-												<Border BorderBrush="#2f2e2e" BorderThickness="0 1 0 0">
+												<Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0 0 0 1">
 													<Grid ColumnDefinitions="*,*">
-														<Border Grid.Column="0" BorderBrush="#2f2e2e" BorderThickness="0 0 1 0">
-															<TextBlock Background="#191818" Padding="10" Text="{Binding ForumName}" Cursor="Hand" PointerPressed="ForumNameTextBlock_PointerPressed" Tag="{Binding ForumUrl}" FontWeight="Bold" TextWrapping="Wrap" />
+														<Border Grid.Column="0" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0 0 1 0">
+															<TextBlock Background="{DynamicResource ForumList_ForumName_Background}" Padding="10" Text="{Binding ForumName}" Cursor="Hand" PointerPressed="ForumNameTextBlock_PointerPressed" Tag="{Binding ForumUrl}" FontWeight="Bold" TextWrapping="Wrap" TextDecorations="{DynamicResource UnderlineDecoration}"/>
 														</Border>
 
-														<StackPanel Background="#191818" Grid.Column="1">
-															<TextBlock  Padding="10 10 20 5" Text="{Binding TopicName}" Tag="{Binding TopicUrl}" PointerPressed="TextBlock_PointerPressed" Cursor="Hand" TextWrapping="Wrap" />
+														<StackPanel Background="{DynamicResource ForumList_TopicName_Background}" Grid.Column="1">
+															<TextBlock Padding="10 10 20 5" Text="{Binding TopicName}" TextDecorations="{DynamicResource UnderlineDecoration}" FontWeight="Bold" Tag="{Binding TopicUrl}" PointerPressed="TextBlock_PointerPressed" Cursor="Hand" TextWrapping="Wrap">
+																<TextBlock.ContextMenu>
+																	<ContextMenu Background="{DynamicResource ContextMenu_Background}" BorderBrush="{DynamicResource ContextMenu_BorderBrush}" Padding="10">
+																		<MenuItem Tag="{Binding TopicUrl}" Click="MenuItemFlashback_Click">
+																			<MenuItem.Header>
+																				<StackPanel Orientation="Horizontal">
+																					<Image Source="avares://FlashbackMonitor/Assets/browser24.png" VerticalAlignment="Center" Width="16" Height="16" Margin="0 0 5 0" />
+																					<TextBlock Foreground="{DynamicResource ContextMenu_Foreground}" Text="Gå till Flashback" VerticalAlignment="Center" />
+																				</StackPanel>
+																			</MenuItem.Header>
+																		</MenuItem>
+																		<MenuItem Tag="{Binding TopicName}" Click="MenuItemAddTopic_Click">
+																			<MenuItem.Header>
+																				<StackPanel Orientation="Horizontal">
+																					<Image Source="avares://FlashbackMonitor/Assets/plus.png" VerticalAlignment="Center" Width="16" Height="16" Margin="0 0 5 0" />
+																					<TextBlock Foreground="{DynamicResource ContextMenu_Foreground}" Text="Prenumerera på tråd" />
+																				</StackPanel>
+																			</MenuItem.Header>
+																		</MenuItem>
+																		<MenuItem Tag="{Binding TopicName}" Click="MenuItemAddFavoriteTopic_Click">
+																			<MenuItem.Header>
+																				<StackPanel Orientation="Horizontal">
+																					<Image Source="avares://FlashbackMonitor/Assets/plus.png" VerticalAlignment="Center" Width="16" Height="16" Margin="0 0 5 0" />
+																					<TextBlock Foreground="{DynamicResource ContextMenu_Foreground}" Text="Prenumerera på tråd (Favorittråd)" />
+																				</StackPanel>
+																			</MenuItem.Header>
+																		</MenuItem>
+																		<MenuItem Tag="{Binding TopicName}" Click="MenuItemRemoveTopic_Click">
+																			<MenuItem.Header>
+																				<StackPanel Orientation="Horizontal">
+																					<Image Source="avares://FlashbackMonitor/Assets/remove2.png" VerticalAlignment="Center" Width="16" Height="16" Margin="0 0 5 0" />
+																					<TextBlock Foreground="{DynamicResource ContextMenu_Foreground}" Text="Sluta prenumerera på tråd" VerticalAlignment="Center" />
+																				</StackPanel>
+																			</MenuItem.Header>
+																		</MenuItem>
+																	</ContextMenu>
+																</TextBlock.ContextMenu>
+															</TextBlock>
 															<StackPanel Orientation="Horizontal">
-																<TextBlock Padding="10 0 0 0" Text="Av " />
-																<TextBlock Padding="0 0 0 0" Text="{Binding UserName}" Foreground="#cc9d42" />
-																<TextBlock Padding="5 0 0 10" Text="{Binding TopicLastUpdated}"/>
+																<TextBlock FontSize="12" Foreground="{DynamicResource ForumList_Topic_Subline}" Padding="10 0 0 0" Text="av " />
+																<TextBlock FontSize="12" TextDecorations="{DynamicResource UnderlineDecoration}" Padding="0 0 0 0" Text="{Binding UserName}" Foreground="{DynamicResource UserNameForeground}" />
+																<TextBlock FontSize="12" Foreground="{DynamicResource ForumList_Topic_Subline}" Padding="3 0 0 10" Text="{Binding TopicLastUpdated}"/>
 															</StackPanel>
 														</StackPanel>
 													</Grid>
@@ -79,14 +114,14 @@
 								<StackPanel Orientation="Vertical" Grid.Row="0" Margin="20 20 0 0">
 									<StackPanel Orientation="Horizontal">
 										<TextBlock Text="&#9733;" FontSize="12" Margin="0 0 10 0" Foreground="{Binding IsFavoriteTopic, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='favoritetopic'}" />
-										<TextBlock Text="{Binding TopicName}" Cursor="Hand" Tag="{Binding TopicUrl}" Width="800" TextWrapping="Wrap" PointerPressed="TextBlock_PointerPressed">
+										<TextBlock Text="{Binding TopicName}" Cursor="Hand" Tag="{Binding TopicUrl}" Width="800" TextWrapping="Wrap" FontWeight="Bold" PointerPressed="TextBlock_PointerPressed" TextDecorations="{DynamicResource UnderlineDecoration}">
 											<TextBlock.ContextMenu>
-												<ContextMenu Background="#101010" BorderBrush="Gray" Padding="10" FontSize="12">
+												<ContextMenu Background="{DynamicResource ContextMenu_Background}" BorderBrush="{DynamicResource ContextMenu_BorderBrush}" Padding="10">
 													<MenuItem Tag="{Binding TopicUrl}" Click="MenuItemFlashback_Click">
 														<MenuItem.Header>
 															<StackPanel Orientation="Horizontal">
 																<Image Source="avares://FlashbackMonitor/Assets/browser24.png" VerticalAlignment="Center" Width="16" Height="16" Margin="0 0 5 0" />
-																<TextBlock Foreground="#bbb" Text="Gå till Flashback" VerticalAlignment="Center" />
+																<TextBlock Foreground="{DynamicResource ContextMenu_Foreground}" Text="Gå till Flashback" VerticalAlignment="Center" />
 															</StackPanel>
 														</MenuItem.Header>
 													</MenuItem>
@@ -94,7 +129,15 @@
 														<MenuItem.Header>
 															<StackPanel Orientation="Horizontal">
 																<Image Source="avares://FlashbackMonitor/Assets/plus.png" VerticalAlignment="Center" Width="16" Height="16" Margin="0 0 5 0" />
-																<TextBlock Foreground="#bbb" Text="Prenumerera på tråd" />
+																<TextBlock Foreground="{DynamicResource ContextMenu_Foreground}" Text="Prenumerera på tråd" />
+															</StackPanel>
+														</MenuItem.Header>
+													</MenuItem>
+													<MenuItem Tag="{Binding TopicName}" Click="MenuItemAddFavoriteTopic_Click">
+														<MenuItem.Header>
+															<StackPanel Orientation="Horizontal">
+																<Image Source="avares://FlashbackMonitor/Assets/plus.png" VerticalAlignment="Center" Width="16" Height="16" Margin="0 0 5 0" />
+																<TextBlock Foreground="{DynamicResource ContextMenu_Foreground}" Text="Prenumerera på tråd (Favorittråd)" />
 															</StackPanel>
 														</MenuItem.Header>
 													</MenuItem>
@@ -102,7 +145,7 @@
 														<MenuItem.Header>
 															<StackPanel Orientation="Horizontal">
 																<Image Source="avares://FlashbackMonitor/Assets/remove2.png" VerticalAlignment="Center" Width="16" Height="16" Margin="0 0 5 0" />
-																<TextBlock Foreground="#bbb" Text="Sluta prenumerera på tråd" VerticalAlignment="Center" />
+																<TextBlock Foreground="{DynamicResource ContextMenu_Foreground}" Text="Sluta prenumerera på tråd" VerticalAlignment="Center" />
 															</StackPanel>
 														</MenuItem.Header>
 													</MenuItem>
@@ -112,14 +155,14 @@
 									</StackPanel>
 									<StackPanel Orientation="Horizontal" Margin="0 10 0 20">
 										<TextBlock Text="&#9733;" FontSize="12" Margin="0 0 10 0" Foreground="{Binding IsFavoriteUser, Converter={StaticResource BooleanToPropertyValueConverter}, ConverterParameter='favoriteuser'}" />
-										<TextBlock Text="{Binding UserName}" Foreground="#cc9d42" Margin="0 0 5 0">
+										<TextBlock Text="{Binding UserName}" FontSize="12" TextDecorations="{DynamicResource UnderlineDecoration}" Foreground="{DynamicResource UserNameForeground}" Margin="0 0 3 0">
 											<TextBlock.ContextMenu>
-												<ContextMenu Background="#101010" BorderBrush="Gray" Padding="10" FontSize="12">
+												<ContextMenu Background="{DynamicResource ContextMenu_Background}" BorderBrush="{DynamicResource ContextMenu_BorderBrush}" Padding="10">
 													<MenuItem Tag="{Binding UserName}" Click="MenuItemAddUser_Click">
 														<MenuItem.Header>
 															<StackPanel Orientation="Horizontal">
 																<Image Source="avares://FlashbackMonitor/Assets/plus.png" VerticalAlignment="Center" Width="16" Height="16" Margin="0 0 5 0" />
-																<TextBlock Foreground="#bbb" Text="Lägg till användare" VerticalAlignment="Center" />
+																<TextBlock Text="Lägg till användare" VerticalAlignment="Center" Foreground="{DynamicResource ContextMenu_Foreground}" />
 															</StackPanel>
 														</MenuItem.Header>
 													</MenuItem>
@@ -127,16 +170,16 @@
 														<MenuItem.Header>
 															<StackPanel Orientation="Horizontal">
 																<Image Source="avares://FlashbackMonitor/Assets/remove2.png" VerticalAlignment="Center" Width="16" Height="16" Margin="0 0 5 0" />
-																<TextBlock Foreground="#bbb" Text="Ta bort användare" VerticalAlignment="Center" />
+																<TextBlock Text="Ta bort användare" VerticalAlignment="Center" Foreground="{DynamicResource ContextMenu_Foreground}" />
 															</StackPanel>
 														</MenuItem.Header>
 													</MenuItem>
 												</ContextMenu>
 											</TextBlock.ContextMenu>
 										</TextBlock>
-										<TextBlock Text="{Binding TopicLastUpdated}" />
+										<TextBlock FontSize="12" Foreground="{DynamicResource ForumList_Topic_Subline}" Text="{Binding TopicLastUpdated}" />
 									</StackPanel>
-									<Border BorderThickness="1" Background="#2f2e2e" Margin="0 0 20 0" />
+									<Border BorderThickness="1" Background="{DynamicResource BorderBrush}" Margin="0 0 20 0" />
 								</StackPanel>
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
@@ -150,7 +193,7 @@
 				<TextBlock FontSize="10" Padding="0 0 3 0" Text="{Binding UpdateStatus}" ToolTip.Tip="{Binding UpdateStatusDescription}" Foreground="#bbb" VerticalAlignment="Center"/>
 				<TextBlock Text="Driftstatus" />
 				<TextBlock Text=" | " />
-				<TextBlock Text="Version: 3.0.3" />
+				<TextBlock Text="Version: 4.0.0" />
 			</StackPanel>
 		</Border>
 	</Grid>

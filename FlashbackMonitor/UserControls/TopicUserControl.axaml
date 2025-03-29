@@ -10,8 +10,7 @@
 			 xmlns:monitor="clr-namespace:FlashbackMonitor.Services;assembly=FlashbackMonitor"
              x:Class="FlashbackMonitor.TopicUserControl"
 			 xmlns:loc="clr-namespace:FlashbackMonitor;assembly=FlashbackMonitor"
-			 xmlns:localt="clr-namespace:FlashbackMonitor;assembly=FlashbackMonitor"
-			 FontSize="12">
+			 xmlns:localt="clr-namespace:FlashbackMonitor;assembly=FlashbackMonitor">
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -21,202 +20,464 @@
 		<StackPanel Grid.Row="0">
 			<DockPanel Margin="20">
 				<Image DockPanel.Dock="Left" VerticalAlignment="Center" Source="avares://FlashbackMonitor/Assets/backyellowmod.png" Width="32" Height="32" PointerPressed="BackImage_PointerPressed" Cursor="Hand" />
-				<TextBlock IsVisible="{Binding !IsLoading}" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="20 0 0 0" Text="{Binding TopicPage.TopicName}" FontSize="18" TextWrapping="Wrap" MaxWidth="640" />
+				<TextBlock IsVisible="{Binding !IsLoading}" DockPanel.Dock="Left" VerticalAlignment="Center" Margin="20 0 0 0" Text="{Binding TopicPage.TopicName}" FontSize="18" TextWrapping="Wrap" MaxWidth="700" />
 				<TextBlock FontWeight="Bold" DockPanel.Dock="Left" Text="{Binding LoadingText}" IsVisible="{Binding IsLoading}" VerticalAlignment="Center" Margin="20 0 0 0" />
 				<TextBlock FontWeight="Bold" DockPanel.Dock="Left" Text="Fel vid datah&#xE4;mtning :( F&#xF6;rs&#xF6;k igen!" IsVisible="{Binding ShowErrorMsg}" VerticalAlignment="Center" Margin="0 0 20 0" />
 				<Button Content="F&#xF6;rs&#xF6;k igen" Click="RetryGettingPageButton_Click" IsVisible="{Binding ShowRetryButton}" Margin="0 0 0 0"/>
 				<StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
-					<Button FontSize="14" BorderBrush="Gray" Foreground="#bbb" Height="32" CornerRadius="0" Content="&#11164;" Click="PreviousPageButton_Click"/>
-					<ComboBox x:Name="PageNumberComboBox" Margin="10 0" SelectedIndex="{Binding SelectedPageIndex}" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding TopicPage.PageNumbers}" VerticalAlignment="Center" Foreground="#bbb"/>
-					<Button FontSize="14" BorderBrush="Gray" Foreground="#bbb" Height="32" CornerRadius="0" HorizontalAlignment="Right" Content="&#11166;" Click="NextPageButton_Click"/>
+					<Button FontSize="14" BorderBrush="Gray" Height="32" CornerRadius="0" Content="&#11164;" Click="PreviousPageButton_Click"/>
+					<ComboBox x:Name="PageNumberComboBox" Margin="10 0" SelectedIndex="{Binding SelectedPageIndex}" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding TopicPage.PageNumbers}" VerticalAlignment="Center"/>
+					<Button FontSize="14" BorderBrush="Gray" Height="32" CornerRadius="0" HorizontalAlignment="Right" Content="&#11166;" Click="NextPageButton_Click"/>
 				</StackPanel>
 			</DockPanel>
-			<Separator Background="#c3870e" Height="5" Margin="22 0 22 10"/>
+			<Separator Background="{DynamicResource Separator_Background}" Height="5" Margin="22 0 22 10"/>
 		</StackPanel>
 		<ScrollViewer x:Name="SV" VerticalScrollBarVisibility="Visible" VerticalAlignment="Top"  Grid.Row="1">
-			<Border Margin="20 0 20 0" BorderBrush="#2f2e2e" BorderThickness="1 0 1 1">
-			<ItemsControl Name="postitems" ItemsSource="{Binding TopicPage.PostItems}">
-				<ItemsControl.ItemTemplate>
-					<DataTemplate>
-						<Border BorderBrush="#2f2e2e" BorderThickness="0 0 0 0">
-							<Grid ColumnDefinitions="180, *" RowDefinitions="*,*" Background="#191818">
-								<StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Background="#0a0a0a" Margin="0 0 0 20">
-									<Border BorderBrush="#2f2e2e" BorderThickness="0 1 0 1">
-										<TextBlock Text="{Binding PostDate}" Padding="25 10" Foreground="Gray"/>
-									</Border>
-								</StackPanel>
-								<StackPanel Width="170" Orientation="Vertical" Grid.Row="1" Grid.Column="0" MinHeight="100">
-									<StackPanel Orientation="Horizontal">
-										<TextBlock Text="{Binding Author}" Foreground="#cc9d42" Padding="20 0 5 0" />
-										<TextBlock Text="&#x25CF;" FontSize="10" VerticalAlignment="Center" ToolTip.Tip="{Binding OnlineStatus}" Foreground="{Binding OnlineStatusColor}" />
+			<Border Margin="20 0 20 0" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1 0 1 1">
+				<ItemsControl Name="postitems" ItemsSource="{Binding TopicPage.PostItems}">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0 0 0 0">
+								<Grid ColumnDefinitions="180, *" RowDefinitions="*,*" Background="{DynamicResource Post_Background}">
+
+									<StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Background="{DynamicResource Post_Header_Background}" Margin="0 0 0 0">
+										<Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0 1 0 1">
+											<TextBlock Text="{Binding PostDate}" Padding="20 5" Foreground="{DynamicResource Post_Header_Foreground}" FontSize="12"/>
+										</Border>
 									</StackPanel>
+	
+									<StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="0" MinHeight="100" Background="{DynamicResource Post_Left_Background}">
+										<TextBlock Text="{Binding Author}" Foreground="{DynamicResource UserNameForeground}" FontWeight="Bold" Padding="20 20 5 0" />
+										<StackPanel Orientation="Horizontal">
+											<TextBlock Text="{Binding UserType}" Padding="20 0 0 0" FontSize="12" />
+											<TextBlock Text="&#x25CF;" Padding="3 0 0 0" FontSize="9" VerticalAlignment="Center" ToolTip.Tip="{Binding OnlineStatus}" Foreground="{Binding OnlineStatusColor}" />
+										</StackPanel>
 
+										<loc:LazyImage ImageUrl="{Binding UserAvatar}" TopicUrl="{Binding $parent[local2:TopicUserControl].((vm:TopicUserControlViewModel)DataContext).TopicUrl}" Margin="20 10 0 0" />
+										<TextBlock FontSize="12" Text="{Binding UserRegistration}" Padding="20 5 10 0" />
+										<TextBlock FontSize="12" Text="{Binding UserPosts}" Padding="20 0 0 20" />
+									</StackPanel>
+									<StackPanel Grid.Row="1" Grid.Column="1" Margin="20 20 20 20">
+										<ItemsControl ItemsSource="{Binding TextContainers}">
+											<ItemsControl.ItemTemplate>
+												<DataTemplate>
+													<Border Margin="0 0 0 0">
+														<StackPanel Width="950">
+															<ItemsControl ItemsSource="{Binding TextItems}">
+																<ItemsControl.ItemsPanel>
+																	<ItemsPanelTemplate>
+																		<WrapPanel Orientation="Horizontal" Width="910" />
+																	</ItemsPanelTemplate>
+																</ItemsControl.ItemsPanel>
+																<ItemsControl.ItemTemplate>
+																	<DataTemplate>
+																		<WrapPanel Orientation="Horizontal">
+																			<local2:FlashbackTextBlock TextKind="{Binding Kind}" Text="{Binding Text}" AdditionalData="{Binding AdditionalData}" TextWrapping="Wrap" />
+																			<!--Citat i huvudinlägget-->
+																			<ItemsControl ItemsSource="{Binding QuoteContainerCollections}">
+																				<ItemsControl.ItemsPanel>
+																					<ItemsPanelTemplate>
+																						<StackPanel Orientation="Vertical" />
+																					</ItemsPanelTemplate>
+																				</ItemsControl.ItemsPanel>
+																				<ItemsControl.ItemTemplate>
+																					<DataTemplate>
+																						<Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource QuoteBodyBackground}" Padding="10" Margin="0 5 0 10">
+																							<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																								<StackPanel Background="{DynamicResource QuoteBodyBackground}" IsVisible="{Binding UserName, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='UserName'}">
+																									<TextBlock Background="{DynamicResource QuoteBodyBackground}" Text="Ursprungligen postat av " Padding="0 0 0 5">
+																										<Run Text="{Binding UserName}" Foreground="{DynamicResource UserNameForeground}" FontWeight="Bold"/>
+																									</TextBlock>
+																								</StackPanel>
+																								<ItemsControl ItemsSource="{Binding QuoteContainers}">
+																									<ItemsControl.ItemsPanel>
+																										<ItemsPanelTemplate>
+																											<WrapPanel Orientation="Horizontal" Width="880" />
+																										</ItemsPanelTemplate>
+																									</ItemsControl.ItemsPanel>
+																									<ItemsControl.ItemTemplate>
+																										<DataTemplate>
+																											<StackPanel Orientation="Horizontal">
+																												<ItemsControl ItemsSource="{Binding TextItems}">
+																													<ItemsControl.ItemsPanel>
+																														<ItemsPanelTemplate>
+																															<WrapPanel Orientation="Horizontal" Width="880" />
+																														</ItemsPanelTemplate>
+																													</ItemsControl.ItemsPanel>
+																													<ItemsControl.ItemTemplate>
+																														<DataTemplate>
+																															<!--START: Spoiler inuti citat-->
+																															<StackPanel Orientation="Horizontal">
+																																<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}" TextWrapping="Wrap" />
+																																<ItemsControl ItemsSource="{Binding SpoilerContainerCollections}">
+																																	<ItemsControl.ItemTemplate>
+																																		<DataTemplate>
+																																			<Border Margin="0 5 0 5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource QuoteBodyBackground}" Width="880" Padding="10">
+																																				<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																																					<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																																						<Button Content="SPOILER" Click="SpoilerButton_Click" Margin="0 0 0 10" />
+																																					</StackPanel>
+																																					<ItemsControl ItemsSource="{Binding SpoilerContainers}" IsVisible="False">
+																																						<ItemsControl.ItemsPanel>
+																																							<ItemsPanelTemplate>
+																																								<WrapPanel Orientation="Horizontal" Width="855" />
+																																							</ItemsPanelTemplate>
+																																						</ItemsControl.ItemsPanel>
+																																						<ItemsControl.ItemTemplate>
+																																							<DataTemplate>
+																																								<StackPanel Orientation="Horizontal">
+																																									<ItemsControl ItemsSource="{Binding TextItems}">
+																																										<ItemsControl.ItemsPanel>
+																																											<ItemsPanelTemplate>
+																																												<WrapPanel Orientation="Horizontal" Width="870" />
+																																											</ItemsPanelTemplate>
+																																										</ItemsControl.ItemsPanel>
+																																										<ItemsControl.ItemTemplate>
+																																											<DataTemplate>
+																																												<StackPanel Orientation="Horizontal">
+																																													<!--Kodblock i spoiler (spoiler är inuti ett citat)-->
+																																													<ItemsControl ItemsSource="{Binding CodeContainerCollections}">
+																																														<ItemsControl.ItemTemplate>
+																																															<DataTemplate>
+																																																<Border Margin="5 5 0 5" BorderBrush="Gray" BorderThickness="1" Background="{DynamicResource QuoteBodyBackground}" Width="800" Padding="10">
+																																																	<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																																																		<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																																																			<Button Content="KOD" Click="SpoilerButton_Click" Margin="0 0 0 10" />
+																																																		</StackPanel>
+																																																		<ItemsControl ItemsSource="{Binding CodeContainers}" IsVisible="False">
+																																																			<ItemsControl.ItemsPanel>
+																																																				<ItemsPanelTemplate>
+																																																					<WrapPanel Orientation="Horizontal" Width="780" />
+																																																				</ItemsPanelTemplate>
+																																																			</ItemsControl.ItemsPanel>
+																																																			<ItemsControl.ItemTemplate>
+																																																				<DataTemplate>
+																																																					<StackPanel Orientation="Horizontal">
+																																																						<ItemsControl ItemsSource="{Binding TextItems}">
+																																																							<ItemsControl.ItemsPanel>
+																																																								<ItemsPanelTemplate>
+																																																									<WrapPanel Orientation="Horizontal" Width="780" />
+																																																								</ItemsPanelTemplate>
+																																																							</ItemsControl.ItemsPanel>
+																																																							<ItemsControl.ItemTemplate>
+																																																								<DataTemplate>
+																																																									<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}" />
+																																																								</DataTemplate>
+																																																							</ItemsControl.ItemTemplate>
+																																																						</ItemsControl>
+																																																					</StackPanel>
+																																																				</DataTemplate>
+																																																			</ItemsControl.ItemTemplate>
+																																																		</ItemsControl>
 
-									<TextBlock Text="{Binding UserType}" Padding="20 0 0 0" />
-									<loc:LazyImage ImageUrl="{Binding UserAvatar}" From="{Binding $parent[local2:TopicUserControl].((vm:TopicUserControlViewModel)DataContext).From}" Margin="20 10 0 0" />
-									<TextBlock Text="{Binding UserRegistration}" Padding="20 10 10 0" />
-									<TextBlock Text="{Binding UserPosts}" Padding="20 0 0 20" />
-								</StackPanel>
-								<StackPanel Grid.Row="1" Grid.Column="1" Margin="0 0 20 20">
-									<ItemsControl ItemsSource="{Binding TextContainers}">
-										<ItemsControl.ItemTemplate>
-											<DataTemplate>
-												<Border Margin="0 0 0 0">
-													<StackPanel Width="670">
-														<ItemsControl ItemsSource="{Binding TextItems}">
-															<ItemsControl.ItemsPanel>
-																<ItemsPanelTemplate>
-																	<WrapPanel Orientation="Horizontal" Width="630" />
-																</ItemsPanelTemplate>
-															</ItemsControl.ItemsPanel>
-															<ItemsControl.ItemTemplate>
-																<DataTemplate>
-																	<WrapPanel Orientation="Horizontal">
-																		<local2:FlashbackTextBlock TextKind="{Binding Kind}" Text="{Binding Text}" AdditionalData="{Binding AdditionalData}" TextWrapping="Wrap" />
-																		<ItemsControl ItemsSource="{Binding QuoteContainerCollections}">
-																			<ItemsControl.ItemsPanel>
-																				<ItemsPanelTemplate>
-																					<StackPanel Orientation="Vertical" />
-																				</ItemsPanelTemplate>
-																			</ItemsControl.ItemsPanel>
-																			<ItemsControl.ItemTemplate>
-																				<DataTemplate>
-																					<Border BorderBrush="Gray" BorderThickness="1" Background="#121111" Padding="10" Margin="0 0 0 20">
-																						<StackPanel Background="#121111">
-																							<StackPanel Background="#121111" IsVisible="{Binding UserName, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='UserName'}">
-																								<TextBlock Background="#121111" Text="Ursprungligen postat av " Padding="0 0 0 5">
-																									<Run Text="{Binding UserName}" Foreground="#cc9d42"/>
-																								</TextBlock>
-																							</StackPanel>
-																							<ItemsControl ItemsSource="{Binding QuoteContainers}">
-																								<ItemsControl.ItemsPanel>
-																									<ItemsPanelTemplate>
-																										<WrapPanel Orientation="Horizontal" Width="600" />
-																									</ItemsPanelTemplate>
-																								</ItemsControl.ItemsPanel>
-																								<ItemsControl.ItemTemplate>
-																									<DataTemplate>
-																										<StackPanel Orientation="Horizontal">
-																											<ItemsControl ItemsSource="{Binding TextItems}">
-																												<ItemsControl.ItemsPanel>
-																													<ItemsPanelTemplate>
-																														<WrapPanel Orientation="Horizontal" Width="600" />
-																													</ItemsPanelTemplate>
-																												</ItemsControl.ItemsPanel>
-																												<ItemsControl.ItemTemplate>
-																													<DataTemplate>
-																														<StackPanel>
-																															<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}" TextWrapping="Wrap" />
-																															<ItemsControl ItemsSource="{Binding SpoilerContainerCollections}">
-																																<ItemsControl.ItemTemplate>
-																																	<DataTemplate>
-																																		<Border BorderBrush="Gray" BorderThickness="1" Background="#121111" Width="590" Padding="10">
-																																			<StackPanel Background="#121111">
-																																				<StackPanel Background="#121111">
-																																					<Button Content="SPOILER" Click="SpoilerButton_Click" Margin="0 0 0 10" />
+																																																	</StackPanel>
+																																																</Border>
+																																															</DataTemplate>
+																																														</ItemsControl.ItemTemplate>
+																																													</ItemsControl>
+																																													<!--End Kodblock i spoiler (spoiler är inuti ett citat)-->
+																																													<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}"/>
+																																												</StackPanel>
+																																											</DataTemplate>
+																																										</ItemsControl.ItemTemplate>
+																																									</ItemsControl>
+																																								</StackPanel>
+																																							</DataTemplate>
+																																						</ItemsControl.ItemTemplate>
+																																					</ItemsControl>
 																																				</StackPanel>
-																																				<ItemsControl ItemsSource="{Binding SpoilerContainers}" IsVisible="False">
-																																					<ItemsControl.ItemsPanel>
-																																						<ItemsPanelTemplate>
-																																							<WrapPanel Orientation="Horizontal" Width="570" />
-																																						</ItemsPanelTemplate>
-																																					</ItemsControl.ItemsPanel>
-																																					<ItemsControl.ItemTemplate>
-																																						<DataTemplate>
-																																							<StackPanel Orientation="Horizontal">
-																																								<ItemsControl ItemsSource="{Binding TextItems}">
-																																									<ItemsControl.ItemsPanel>
-																																										<ItemsPanelTemplate>
-																																											<WrapPanel Orientation="Horizontal" Width="570" />
-																																										</ItemsPanelTemplate>
-																																									</ItemsControl.ItemsPanel>
-																																									<ItemsControl.ItemTemplate>
-																																										<DataTemplate>
-																																											<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}"/>
-																																										</DataTemplate>
-																																									</ItemsControl.ItemTemplate>
-																																								</ItemsControl>
-																																							</StackPanel>
-																																						</DataTemplate>
-																																					</ItemsControl.ItemTemplate>
-																																				</ItemsControl>
-																																			</StackPanel>
-																																		</Border>
-																																	</DataTemplate>
-																																</ItemsControl.ItemTemplate>
-																															</ItemsControl>
-																														</StackPanel>
-																													</DataTemplate>
-																												</ItemsControl.ItemTemplate>
-																											</ItemsControl>
-																										</StackPanel>
-																									</DataTemplate>
-																								</ItemsControl.ItemTemplate>
-																							</ItemsControl>
-																						</StackPanel>
-																					</Border>
-
-
-
-
-																				</DataTemplate>
-																			</ItemsControl.ItemTemplate>
-																		</ItemsControl>
-																		<ItemsControl ItemsSource="{Binding SpoilerContainerCollections}">
-																			<ItemsControl.ItemTemplate>
-																				<DataTemplate>
-																					<Border BorderBrush="Gray" BorderThickness="1" Background="#121111" Width="620" Padding="10">
-																						<StackPanel Background="#121111">
-																							<StackPanel Background="#121111">
-																								<Button Content="SPOILER" Click="SpoilerButton_Click" Margin="0 0 0 10" />
+																																			</Border>
+																																		</DataTemplate>
+																																	</ItemsControl.ItemTemplate>
+																																</ItemsControl>
+																																<!--Kod i quote-->
+																																<ItemsControl ItemsSource="{Binding CodeContainerCollections}">
+																																	<ItemsControl.ItemTemplate>
+																																		<DataTemplate>
+																																			<Border Margin="0 5 0 5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource QuoteBodyBackground}" Width="880" Padding="10">
+																																				<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																																					<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																																						<Button Content="KOD" Click="SpoilerButton_Click" Margin="0 0 0 10" />
+																																					</StackPanel>
+																																					<ItemsControl ItemsSource="{Binding CodeContainers}" IsVisible="False">
+																																						<ItemsControl.ItemsPanel>
+																																							<ItemsPanelTemplate>
+																																								<WrapPanel Orientation="Horizontal" Width="850" />
+																																							</ItemsPanelTemplate>
+																																						</ItemsControl.ItemsPanel>
+																																						<ItemsControl.ItemTemplate>
+																																							<DataTemplate>
+																																								<StackPanel Orientation="Horizontal">
+																																									<ItemsControl ItemsSource="{Binding TextItems}">
+																																										<ItemsControl.ItemsPanel>
+																																											<ItemsPanelTemplate>
+																																												<WrapPanel Orientation="Horizontal" Width="870" />
+																																											</ItemsPanelTemplate>
+																																										</ItemsControl.ItemsPanel>
+																																										<ItemsControl.ItemTemplate>
+																																											<DataTemplate>
+																																												<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}"/>
+																																											</DataTemplate>
+																																										</ItemsControl.ItemTemplate>
+																																									</ItemsControl>
+																																								</StackPanel>
+																																							</DataTemplate>
+																																						</ItemsControl.ItemTemplate>
+																																					</ItemsControl>
+																																				</StackPanel>
+																																			</Border>
+																																		</DataTemplate>
+																																	</ItemsControl.ItemTemplate>
+																																</ItemsControl>
+																																<!--end Kod i quote-->
+																															</StackPanel>
+																														</DataTemplate>
+																													</ItemsControl.ItemTemplate>
+																												</ItemsControl>
+																											</StackPanel>
+																										</DataTemplate>
+																									</ItemsControl.ItemTemplate>
+																								</ItemsControl>
 																							</StackPanel>
-																							<ItemsControl ItemsSource="{Binding SpoilerContainers}" IsVisible="False">
-																								<ItemsControl.ItemsPanel>
-																									<ItemsPanelTemplate>
-																										<WrapPanel Orientation="Horizontal" Width="600" />
-																									</ItemsPanelTemplate>
-																								</ItemsControl.ItemsPanel>
-																								<ItemsControl.ItemTemplate>
-																									<DataTemplate>
-																										<StackPanel Orientation="Horizontal">
-																											<ItemsControl ItemsSource="{Binding TextItems}">
-																												<ItemsControl.ItemsPanel>
-																													<ItemsPanelTemplate>
-																														<WrapPanel Orientation="Horizontal" Width="600" />
-																													</ItemsPanelTemplate>
-																												</ItemsControl.ItemsPanel>
-																												<ItemsControl.ItemTemplate>
-																													<DataTemplate>
-																														<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}" />
-																													</DataTemplate>
-																												</ItemsControl.ItemTemplate>
-																											</ItemsControl>
-																										</StackPanel>
-																									</DataTemplate>
-																								</ItemsControl.ItemTemplate>
-																							</ItemsControl>
+																						</Border>
+																					</DataTemplate>
+																				</ItemsControl.ItemTemplate>
+																				<!--Slut citat i huvudinlägget-->
+																			</ItemsControl>
+																			<!--Spoiler i huvudcitatet-->
+																			<ItemsControl ItemsSource="{Binding SpoilerContainerCollections}">
+																				<ItemsControl.ItemTemplate>
+																					<DataTemplate>
+																						<Border Margin="0 5 0 5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource QuoteBodyBackground}" Width="903" Padding="10">
+																							<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																								<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																									<Button Content="SPOILER" Click="SpoilerButton_Click" Margin="0 0 0 10" />
+																								</StackPanel>
+																								<ItemsControl ItemsSource="{Binding SpoilerContainers}" IsVisible="False">
+																									<ItemsControl.ItemsPanel>
+																										<ItemsPanelTemplate>
+																											<WrapPanel Orientation="Horizontal" Width="880" />
+																										</ItemsPanelTemplate>
+																									</ItemsControl.ItemsPanel>
+																									<ItemsControl.ItemTemplate>
+																										<DataTemplate>
+																											<StackPanel Orientation="Horizontal">
+																												<ItemsControl ItemsSource="{Binding TextItems}">
+																													<ItemsControl.ItemsPanel>
+																														<ItemsPanelTemplate>
+																															<WrapPanel Orientation="Horizontal" Width="880" />
+																														</ItemsPanelTemplate>
+																													</ItemsControl.ItemsPanel>
+																													<ItemsControl.ItemTemplate>
+																														<DataTemplate>
+																															<StackPanel Orientation="Horizontal">
+																																<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}" />
+																																<!--Kodblock i spoiler (spoiler är i huvudinlägget)-->
+																																<ItemsControl ItemsSource="{Binding CodeContainerCollections}">
+																																	<ItemsControl.ItemTemplate>
+																																		<DataTemplate>
+																																			<Border Margin="0 5 0 5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource QuoteBodyBackground}" Width="880" Padding="10">
+																																				<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																																					<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																																						<Button Content="KOD" Click="SpoilerButton_Click" Margin="0 0 0 10" />
+																																					</StackPanel>
+																																					<ItemsControl ItemsSource="{Binding CodeContainers}" IsVisible="False">
+																																						<ItemsControl.ItemsPanel>
+																																							<ItemsPanelTemplate>
+																																								<WrapPanel Orientation="Horizontal" Width="850" />
+																																							</ItemsPanelTemplate>
+																																						</ItemsControl.ItemsPanel>
+																																						<ItemsControl.ItemTemplate>
+																																							<DataTemplate>
+																																								<StackPanel Orientation="Horizontal">
+																																									<ItemsControl ItemsSource="{Binding TextItems}">
+																																										<ItemsControl.ItemsPanel>
+																																											<ItemsPanelTemplate>
+																																												<WrapPanel Orientation="Horizontal" Width="850" />
+																																											</ItemsPanelTemplate>
+																																										</ItemsControl.ItemsPanel>
+																																										<ItemsControl.ItemTemplate>
+																																											<DataTemplate>
+																																							
+																																													<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}" />
+																																									
+																																											</DataTemplate>
+																																										</ItemsControl.ItemTemplate>
+																																									</ItemsControl>
+																																								</StackPanel>
+																																							</DataTemplate>
+																																						</ItemsControl.ItemTemplate>
+																																					</ItemsControl>
 
-																						</StackPanel>
-																					</Border>
-																				</DataTemplate>
-																			</ItemsControl.ItemTemplate>
-																		</ItemsControl>
-																	</WrapPanel>
-																</DataTemplate>
-															</ItemsControl.ItemTemplate>
-														</ItemsControl>
-													</StackPanel>
-												</Border>
-											</DataTemplate>
-										</ItemsControl.ItemTemplate>
-									</ItemsControl>
-								</StackPanel>
-							</Grid>
-						</Border>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-				</Border>
+																																				</StackPanel>
+																																			</Border>
+																																		</DataTemplate>
+																																	</ItemsControl.ItemTemplate>
+																																</ItemsControl>
+																																<!--End Kodblock i spoiler (spoiler är i huvudinlägget-->
+																																<!--START: Citat inuti en spoiler (spoiler är i huvudinlägget)-->
+																																<ItemsControl ItemsSource="{Binding QuoteContainerCollections}">
+																																	<ItemsControl.ItemsPanel>
+																																		<ItemsPanelTemplate>
+																																			<StackPanel Orientation="Vertical" />
+																																		</ItemsPanelTemplate>
+																																	</ItemsControl.ItemsPanel>
+																																	<ItemsControl.ItemTemplate>
+																																		<DataTemplate>
+																																			<Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource QuoteBodyBackground}" Padding="10" Margin="3 5 0 10">
+																																				<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																																					<StackPanel Background="{DynamicResource QuoteBodyBackground}" IsVisible="{Binding UserName, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter='UserName'}">
+																																						<TextBlock Background="{DynamicResource QuoteBodyBackground}" Text="Ursprungligen postat av " Padding="0 0 0 5">
+																																							<Run Text="{Binding UserName}" Foreground="{DynamicResource UserNameForeground}" FontWeight="Bold"/>
+																																						</TextBlock>
+																																					</StackPanel>
+																																					<ItemsControl ItemsSource="{Binding QuoteContainers}">
+																																						<ItemsControl.ItemsPanel>
+																																							<ItemsPanelTemplate>
+																																								<WrapPanel Orientation="Horizontal" Width="850" />
+																																							</ItemsPanelTemplate>
+																																						</ItemsControl.ItemsPanel>
+																																						<ItemsControl.ItemTemplate>
+																																							<DataTemplate>
+																																								<StackPanel Orientation="Horizontal">
+																																									<ItemsControl ItemsSource="{Binding TextItems}">
+																																										<ItemsControl.ItemsPanel>
+																																											<ItemsPanelTemplate>
+																																												<WrapPanel Orientation="Horizontal" Width="850" />
+																																											</ItemsPanelTemplate>
+																																										</ItemsControl.ItemsPanel>
+																																										<ItemsControl.ItemTemplate>
+																																											<DataTemplate>
+																																									
+																																												<StackPanel Orientation="Horizontal">
+																																													<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}" TextWrapping="Wrap" />
+																																													
+																																													<!--START: Kod i citat (citatet är inuti en spoiler)-->
+																																													<ItemsControl ItemsSource="{Binding CodeContainerCollections}">
+																																														<ItemsControl.ItemTemplate>
+																																															<DataTemplate>
+																																																<Border Margin="0 5 0 5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource QuoteBodyBackground}" Width="850" Padding="10">
+																																																	<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																																																		<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																																																			<Button Content="KOD" Click="SpoilerButton_Click" Margin="0 0 0 10" />
+																																																		</StackPanel>
+																																																		<ItemsControl ItemsSource="{Binding CodeContainers}" IsVisible="False">
+																																																			<ItemsControl.ItemsPanel>
+																																																				<ItemsPanelTemplate>
+																																																					<WrapPanel Orientation="Horizontal" Width="820" />
+																																																				</ItemsPanelTemplate>
+																																																			</ItemsControl.ItemsPanel>
+																																																			<ItemsControl.ItemTemplate>
+																																																				<DataTemplate>
+																																																					<StackPanel Orientation="Horizontal">
+																																																						<ItemsControl ItemsSource="{Binding TextItems}">
+																																																							<ItemsControl.ItemsPanel>
+																																																								<ItemsPanelTemplate>
+																																																									<WrapPanel Orientation="Horizontal" Width="820" />
+																																																								</ItemsPanelTemplate>
+																																																							</ItemsControl.ItemsPanel>
+																																																							<ItemsControl.ItemTemplate>
+																																																								<DataTemplate>
+																																																									<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}"/>
+																																																								</DataTemplate>
+																																																							</ItemsControl.ItemTemplate>
+																																																						</ItemsControl>
+																																																					</StackPanel>
+																																																				</DataTemplate>
+																																																			</ItemsControl.ItemTemplate>
+																																																		</ItemsControl>
+																																																	</StackPanel>
+																																																</Border>
+																																															</DataTemplate>
+																																														</ItemsControl.ItemTemplate>
+																																													</ItemsControl>
+																																													<!--SLUT: Kod i citat (citatet är inuti en spoiler)-->
+																																												</StackPanel>
+																																											</DataTemplate>
+																																										</ItemsControl.ItemTemplate>
+																																									</ItemsControl>
+																																								</StackPanel>
+																																							</DataTemplate>
+																																						</ItemsControl.ItemTemplate>
+																																					</ItemsControl>
+																																				</StackPanel>
+																																			</Border>
+																																		</DataTemplate>
+																																	</ItemsControl.ItemTemplate>
+																																	</ItemsControl>
+																																<!--SLUT: Citat inuti en spoiler (spoiler är i huvudinlägget)-->
+
+																															</StackPanel>
+																														</DataTemplate>
+																													</ItemsControl.ItemTemplate>
+																												</ItemsControl>
+																											</StackPanel>
+																										</DataTemplate>
+																									</ItemsControl.ItemTemplate>
+																								</ItemsControl>
+																								<!--Slut spoiler i huvudcitatet-->
+																							</StackPanel>
+																						</Border>
+																					</DataTemplate>
+																				</ItemsControl.ItemTemplate>
+																			</ItemsControl>
+																			<!--Kodblock i huvudcitatet-->
+																			<ItemsControl ItemsSource="{Binding CodeContainerCollections}">
+																				<ItemsControl.ItemTemplate>
+																					<DataTemplate>
+																						<Border Margin="0 5 0 5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource QuoteBodyBackground}" Width="903" Padding="10">
+																							<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																								<StackPanel Background="{DynamicResource QuoteBodyBackground}">
+																									<Button Content="KOD" Click="SpoilerButton_Click" Margin="0 0 0 10" />
+																								</StackPanel>
+																								<ItemsControl ItemsSource="{Binding CodeContainers}" IsVisible="False">
+																									<ItemsControl.ItemsPanel>
+																										<ItemsPanelTemplate>
+																											<WrapPanel Orientation="Horizontal" Width="880" />
+																										</ItemsPanelTemplate>
+																									</ItemsControl.ItemsPanel>
+																									<ItemsControl.ItemTemplate>
+																										<DataTemplate>
+																											<StackPanel Orientation="Horizontal">
+																												<ItemsControl ItemsSource="{Binding TextItems}">
+																													<ItemsControl.ItemsPanel>
+																														<ItemsPanelTemplate>
+																															<WrapPanel Orientation="Horizontal" Width="880" />
+																														</ItemsPanelTemplate>
+																													</ItemsControl.ItemsPanel>
+																													<ItemsControl.ItemTemplate>
+																														<DataTemplate>
+																															<local2:FlashbackTextBlock Text="{Binding Text}" TextKind="{Binding Kind}" AdditionalData="{Binding AdditionalData}" />
+																														</DataTemplate>
+																													</ItemsControl.ItemTemplate>
+																												</ItemsControl>
+																											</StackPanel>
+																										</DataTemplate>
+																									</ItemsControl.ItemTemplate>
+																								</ItemsControl>
+
+																							</StackPanel>
+																						</Border>
+																					</DataTemplate>
+																				</ItemsControl.ItemTemplate>
+																			</ItemsControl>
+																			<!--End Kodblock i huvudcitatet-->
+																		</WrapPanel>
+																	</DataTemplate>
+																</ItemsControl.ItemTemplate>
+															</ItemsControl>
+														</StackPanel>
+													</Border>
+												</DataTemplate>
+											</ItemsControl.ItemTemplate>
+										</ItemsControl>
+									</StackPanel>
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</Border>
 		</ScrollViewer>
 	</Grid>
 </UserControl>

@@ -1,4 +1,5 @@
-﻿using DynamicData;
+﻿using Avalonia.Styling;
+using DynamicData;
 using FlashbackMonitor.Services;
 using ReactiveUI;
 using System;
@@ -23,8 +24,17 @@ namespace FlashbackMonitor.ViewModels
         public ObservableCollection<TopicViewModel> Topics { get; set; } = [];
         public ObservableCollection<CategoryWithForumsViewModel> CategoryWithForums { get; set; } = [];
 
+        public bool IsUsingDarkTheme { get; set; }
+
         private static CancellationTokenSource cancellationTokenSource;
         CancellationToken token;
+
+        private string _theme;
+        public string Theme
+        {
+            get => _theme;
+            set => this.RaiseAndSetIfChanged(ref _theme, value);
+        }
 
         private bool _showOverviewView;
         public bool ShowOverviewView
@@ -233,6 +243,10 @@ namespace FlashbackMonitor.ViewModels
             _settingsService = settingsService;
             _settings = _settingsService.GetSettings();
 
+            App.Current.RequestedThemeVariant = (_settings.Theme ?? "Dark") == "Dark" ? ThemeVariant.Dark : ThemeVariant.Light;
+
+            IsUsingDarkTheme = _settings.Theme == "Dark";
+
             Topics.AddRange(_settings.Topics);
             Users.AddRange(_settings.Users);
             Interval = _settings.Interval;
@@ -269,6 +283,12 @@ namespace FlashbackMonitor.ViewModels
             }
             catch
             {
+            }
+
+            foreach (var notification in AllNotificationItems)
+            {
+                notification.IsFavoriteUser = _settings.Users.FirstOrDefault(x => string.Equals(x.UserName, notification.UserName, StringComparison.OrdinalIgnoreCase))?.Favorite ?? false;
+                notification.IsFavoriteTopic = _settings.Topics.FirstOrDefault(x => string.Equals(x.TopicName, notification.TopicName, StringComparison.OrdinalIgnoreCase))?.IsFavoriteTopic ?? false;
             }
 
             ApplyFilter();

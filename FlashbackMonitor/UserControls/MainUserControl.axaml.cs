@@ -1,6 +1,8 @@
 using Avalonia.Controls;
+using FlashbackMonitor.Utils;
 using FlashbackMonitor.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -8,15 +10,19 @@ namespace FlashbackMonitor;
 
 public partial class MainUserControl : UserControl
 {
-    public event Action<string, string> NavigateToTopic;
+    public event Action<Stack<NavigationInfo>> NavigateToTopic;
 
     public event Action NavigateToSettings;
-    public event Action<string> NavigateToThreadList;
+    public event Action<Stack<NavigationInfo>> NavigateToThreadList;
+    public Stack<NavigationInfo> NavigationInfoStack {  get; set; } = new Stack<NavigationInfo>();
 
-    public MainUserControl()
+    public MainUserControl(Stack<NavigationInfo> navigationInfo)
     {
         InitializeComponent();
+        NavigationInfoStack = navigationInfo ?? new Stack<NavigationInfo>();
     }
+
+    public MainUserControl() { }
 
     private void TextBlock_PointerPressed(object sender, Avalonia.Input.PointerPressedEventArgs e)
     {
@@ -25,7 +31,17 @@ public partial class MainUserControl : UserControl
             if (sender is TextBlock clickedTextBlock)
             {
                 var tagValue = clickedTextBlock.Tag?.ToString();
-                NavigateToTopic?.Invoke(tagValue, "main");
+
+                NavigationInfoStack.Push(
+                new NavigationInfo
+                {
+                    PreviousUrl = null,
+                    PreviousUserControl = UserControlType.MainUserControl,
+                    RequestedUrl = tagValue,
+                    RequestedUserControl = UserControlType.TopicUserControl
+                });
+
+                NavigateToTopic?.Invoke(NavigationInfoStack);
             }
         }
     }
@@ -55,7 +71,7 @@ public partial class MainUserControl : UserControl
         var viewModel = DataContext as MainWindowViewModel;
         var topicName = (sender as MenuItem).Tag as string;
         var topic = viewModel.Topics.FirstOrDefault(t => string.Equals(t.TopicName, topicName, StringComparison.OrdinalIgnoreCase));
-        
+
         if (topic == null)
         {
             viewModel.Topics.Insert(0, new TopicViewModel()
@@ -67,12 +83,34 @@ public partial class MainUserControl : UserControl
         viewModel.SaveSettingsCommand.Execute(null);
     }
 
+    private void MenuItemAddFavoriteTopic_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var viewModel = DataContext as MainWindowViewModel;
+        var topicName = (sender as MenuItem).Tag as string;
+        var topic = viewModel.Topics.FirstOrDefault(t => string.Equals(t.TopicName, topicName, StringComparison.OrdinalIgnoreCase));
+
+        if (topic == null)
+        {
+            viewModel.Topics.Insert(0, new TopicViewModel()
+            {
+                TopicName = topicName,
+                IsFavoriteTopic = true
+            });
+        }
+        else
+        {
+            topic.IsFavoriteTopic = true;
+        }
+
+        viewModel.SaveSettingsCommand.Execute(null);
+    }
+
     private void MenuItemRemoveTopic_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         var viewModel = DataContext as MainWindowViewModel;
         var topicName = (sender as MenuItem).Tag as string;
         var topic = viewModel.Topics.FirstOrDefault(t => string.Equals(t.TopicName, topicName, StringComparison.OrdinalIgnoreCase));
-        
+
         if (topic != null)
         {
             foreach (var t in viewModel.AllNotificationItems.Where(x => x.TopicName == topicName))
@@ -91,7 +129,7 @@ public partial class MainUserControl : UserControl
         var viewModel = DataContext as MainWindowViewModel;
         var clickedUserName = (sender as MenuItem).Tag as string;
         var user = viewModel.Users.FirstOrDefault(x => string.Equals(x.UserName, clickedUserName, StringComparison.OrdinalIgnoreCase));
-        
+
         if (user == null)
         {
             viewModel.Users.Insert(0, new UserViewModel()
@@ -108,12 +146,17 @@ public partial class MainUserControl : UserControl
         var viewModel = DataContext as MainWindowViewModel;
         var clickedUserName = (sender as MenuItem).Tag as string;
         var user = viewModel.Users.FirstOrDefault(x => string.Equals(x.UserName, clickedUserName, StringComparison.OrdinalIgnoreCase));
-        
+
         if (user != null)
         {
+            foreach (var u in viewModel.AllNotificationItems.Where(x => x.UserName == user.UserName))
+            {
+                u.IsFavoriteUser = false;
+            }
+
             viewModel.Users.Remove(user);
         }
-       
+
         viewModel.SaveSettingsCommand.Execute(null);
     }
 
@@ -157,8 +200,18 @@ public partial class MainUserControl : UserControl
         {
             if (sender is TextBlock clickedTextBlock)
             {
-                var tagValue = clickedTextBlock.Tag?.ToString();
-                NavigateToThreadList?.Invoke(tagValue);
+                var forumUrl = clickedTextBlock.Tag?.ToString();
+
+                NavigationInfoStack.Push(
+                    new NavigationInfo
+                    {
+                        PreviousUrl = null,
+                        PreviousUserControl = UserControlType.MainUserControl,
+                        RequestedUrl = forumUrl,
+                        RequestedUserControl = UserControlType.ThreadListUserControl
+                    });
+
+                NavigateToThreadList?.Invoke(NavigationInfoStack);
             }
         }
     }

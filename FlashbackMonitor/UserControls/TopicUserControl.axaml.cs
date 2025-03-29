@@ -4,8 +4,10 @@ using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.VisualTree;
 using FlashbackMonitor.Services;
+using FlashbackMonitor.Utils;
 using FlashbackMonitor.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace FlashbackMonitor;
@@ -15,29 +17,22 @@ public partial class TopicUserControl : UserControl
     private bool _disposed;
 
     public event Action NavigateToMain;
-    public event Action<string> NavigateToThreadList;
+    public event Action<Stack<NavigationInfo>> NavigateToThreadList;
 
     public TopicUserControlViewModel ViewModel { get; }
 
-    public string TopicUrl { get; set; }
-
-    public string From { get; set; }
+    public Stack<NavigationInfo> NavigationInfo { get; set; }
 
     public TopicUserControl()
     {
-        InitializeComponent();
-        ViewModel = new TopicUserControlViewModel(new FlashbackService(), TopicUrl);
-        DataContext = ViewModel;
     }
 
-    public TopicUserControl(string topicUrl, string from = null)
+    public TopicUserControl(Stack<NavigationInfo> navigationInfo)
     {
         InitializeComponent();
-        ViewModel = new TopicUserControlViewModel(new FlashbackService(), topicUrl);
+        ViewModel = new TopicUserControlViewModel(new FlashbackService(), navigationInfo.First().RequestedUrl);
         DataContext = ViewModel;
-        TopicUrl = topicUrl;
-        From = from;
-        ViewModel.From = From;
+        NavigationInfo = navigationInfo;
     }
 
     protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
@@ -53,8 +48,8 @@ public partial class TopicUserControl : UserControl
         if (DataContext is TopicUserControlViewModel viewModel)
         {
             await ViewModel.InitializeAsync();
-            
-            if (From == "main")
+
+            if (NavigationInfo.First().RequestedUrl.EndsWith("n"))
             {
                 var scrollViewer = this.FindControl<ScrollViewer>("SV");
                 scrollViewer.ScrollToEnd();
@@ -64,14 +59,17 @@ public partial class TopicUserControl : UserControl
 
     private void BackImage_PointerPressed(object sender, Avalonia.Input.PointerPressedEventArgs e)
     {
-        if (From == "main")
+        NavigationInfo.Pop();
+
+        if (NavigationInfo.Count == 0 || NavigationInfo.First().RequestedUserControl == UserControlType.MainUserControl)
         {
             NavigateToMain?.Invoke();
         }
         else
         {
-            NavigateToThreadList?.Invoke(From);
+            NavigateToThreadList?.Invoke(NavigationInfo);
         }
+
     }
 
     private void TextBlockTopicText_PointerEntered(object sender, Avalonia.Input.PointerEventArgs e)
@@ -152,7 +150,6 @@ public partial class TopicUserControl : UserControl
 
         await ViewModel.InitializeAsync();
 
-        ViewModel.From = "";
         var scrollViewer = this.FindControl<ScrollViewer>("SV");
         scrollViewer.ScrollToHome();
     }
@@ -162,7 +159,7 @@ public partial class TopicUserControl : UserControl
         var button = sender as Button;
         var parentStackPanel = button.GetVisualParent() as StackPanel;
         var itemsControl = GetNextSibling(parentStackPanel);
-        
+
         if (itemsControl != null)
         {
             itemsControl.IsVisible = !itemsControl.IsVisible;
@@ -198,7 +195,6 @@ public partial class TopicUserControl : UserControl
 
     private void PreviousPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        ViewModel.From = "";
         if (ViewModel.TopicPage != null && ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.First())
         {
             var pageNumberComboBox = this.FindControl<ComboBox>("PageNumberComboBox");
@@ -208,7 +204,6 @@ public partial class TopicUserControl : UserControl
 
     private void NextPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        ViewModel.From = "";
         if (ViewModel.TopicPage != null && ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.Last())
         {
             var pageNumberComboBox = this.FindControl<ComboBox>("PageNumberComboBox");

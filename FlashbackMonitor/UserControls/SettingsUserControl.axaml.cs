@@ -1,6 +1,8 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Styling;
 using FlashbackMonitor.ViewModels;
 using System;
 using System.Linq;
@@ -145,7 +147,8 @@ public partial class SettingsUserControl : UserControl
     private void TextBlockForum_PointerEntered(object sender, PointerEventArgs e)
     {
         var forumTextBlock = sender as TextBlock;
-        forumTextBlock.Foreground = new SolidColorBrush(Color.Parse("#cc9d42"));
+        Application.Current.TryGetResource("ForumItem_Selected_Foreground", Application.Current.ActualThemeVariant, out var selectedForeground);
+        forumTextBlock.Foreground = new SolidColorBrush(Color.Parse(selectedForeground.ToString()));
     }
 
     private void TextBlockForum_PointerExited(object sender, PointerEventArgs e)
@@ -155,10 +158,10 @@ public partial class SettingsUserControl : UserControl
         var textBlock = sender as TextBlock;
         var forumName = textBlock.Text;
         var forumItem = viewModel.ForumItems.FirstOrDefault(f => f.Name == forumName);
-
+        Application.Current.TryGetResource("ForumItem_Foreground", Application.Current.ActualThemeVariant, out var foreground);
         if (!forumItem.IsChecked)
         {
-            forumTextBlock.Foreground = Brushes.Gray;
+            forumTextBlock.Foreground = new SolidColorBrush(Color.Parse(foreground.ToString()));
         }
     }
 
@@ -172,5 +175,21 @@ public partial class SettingsUserControl : UserControl
         var viewModel = DataContext as MainWindowViewModel;
         viewModel.SaveSettingsCommand.Execute(null);
         NavigateToMain?.Invoke();
+    }
+
+    private void ToggleSwitch_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (Application.Current.ActualThemeVariant == ThemeVariant.Light)
+        {
+            App.Current.RequestedThemeVariant = ThemeVariant.Dark;
+            var viewModel = DataContext as MainWindowViewModel;
+            viewModel.Theme = "Dark";
+        }
+        else
+        {
+            App.Current.RequestedThemeVariant = ThemeVariant.Light;
+            var viewModel = DataContext as MainWindowViewModel;
+            viewModel.Theme = "Light";
+        }
     }
 }
