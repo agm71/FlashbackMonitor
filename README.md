@@ -1,5 +1,7 @@
 Flashback Monitor pollar Flashback för att visa de senaste inläggen samt ger möjlighet att läsa trådar i de olika forumen.
 
+Tips: Använd tangenterna A/D eller vänsterpil/högerpil för att navigera mellan sidor i en tråd.
+
 
 <img width="902" alt="fbmonitor4_1 - Copy" src="https://github.com/user-attachments/assets/bcf40ea8-cad8-4b8f-9c97-473cc783b475" />
 <br>
