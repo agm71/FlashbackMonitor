@@ -33,6 +33,19 @@ public partial class TopicUserControl : UserControl
         ViewModel = new TopicUserControlViewModel(new FlashbackService(), navigationInfo.First().RequestedUrl);
         DataContext = ViewModel;
         NavigationInfo = navigationInfo;
+        this.KeyUp += TopicUserControl_KeyUp;
+    }
+
+    private void TopicUserControl_KeyUp(object sender, Avalonia.Input.KeyEventArgs e)
+    {
+        if (e.Key == Avalonia.Input.Key.A || e.Key == Avalonia.Input.Key.Left)
+        {
+            PreviousPage();
+        }
+        else if (e.Key == Avalonia.Input.Key.D || e.Key == Avalonia.Input.Key.Right)
+        {
+            NextPage();
+        }
     }
 
     protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
@@ -195,24 +208,39 @@ public partial class TopicUserControl : UserControl
 
     private void PreviousPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (ViewModel.TopicPage != null && ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.First())
+        PreviousPage();
+    }
+
+    private void NextPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        NextPage();
+    }
+
+    private async void RetryGettingPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        await ViewModel.InitializeAsync();
+    }
+
+    private void PreviousPage()
+    {
+        if (ViewModel.TopicPage != null && ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.First() && !ViewModel.IsLoading)
         {
             var pageNumberComboBox = this.FindControl<ComboBox>("PageNumberComboBox");
             PageNumberComboBox.SelectedIndex = PageNumberComboBox.SelectedIndex - 1;
         }
     }
 
-    private void NextPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void NextPage()
     {
-        if (ViewModel.TopicPage != null && ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.Last())
+        if (ViewModel.TopicPage != null && ViewModel.TopicPage.CurrentPage.ToString() != ViewModel.TopicPage.PageNumbers.Last() && !ViewModel.IsLoading)
         {
             var pageNumberComboBox = this.FindControl<ComboBox>("PageNumberComboBox");
             PageNumberComboBox.SelectedIndex = PageNumberComboBox.SelectedIndex + 1;
         }
     }
 
-    private async void RetryGettingPageButton_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void UserControl_Loaded(object sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        await ViewModel.InitializeAsync();
+        this.Focus();
     }
 }

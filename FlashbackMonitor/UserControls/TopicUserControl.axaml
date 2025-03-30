@@ -10,7 +10,8 @@
 			 xmlns:monitor="clr-namespace:FlashbackMonitor.Services;assembly=FlashbackMonitor"
              x:Class="FlashbackMonitor.TopicUserControl"
 			 xmlns:loc="clr-namespace:FlashbackMonitor;assembly=FlashbackMonitor"
-			 xmlns:localt="clr-namespace:FlashbackMonitor;assembly=FlashbackMonitor">
+			 xmlns:localt="clr-namespace:FlashbackMonitor;assembly=FlashbackMonitor"
+			 Loaded="UserControl_Loaded" Focusable="True">
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -25,9 +26,9 @@
 				<TextBlock FontWeight="Bold" DockPanel.Dock="Left" Text="Fel vid datah&#xE4;mtning :( F&#xF6;rs&#xF6;k igen!" IsVisible="{Binding ShowErrorMsg}" VerticalAlignment="Center" Margin="0 0 20 0" />
 				<Button Content="F&#xF6;rs&#xF6;k igen" Click="RetryGettingPageButton_Click" IsVisible="{Binding ShowRetryButton}" Margin="0 0 0 0"/>
 				<StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
-					<Button FontSize="14" BorderBrush="Gray" Height="32" CornerRadius="0" Content="&#11164;" Click="PreviousPageButton_Click"/>
-					<ComboBox x:Name="PageNumberComboBox" Margin="10 0" SelectedIndex="{Binding SelectedPageIndex}" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding TopicPage.PageNumbers}" VerticalAlignment="Center"/>
-					<Button FontSize="14" BorderBrush="Gray" Height="32" CornerRadius="0" HorizontalAlignment="Right" Content="&#11166;" Click="NextPageButton_Click"/>
+					<Button Focusable="False" FontSize="14" BorderBrush="Gray" Height="32" CornerRadius="0" Content="&#11164;" Click="PreviousPageButton_Click"/>
+					<ComboBox Focusable="False" x:Name="PageNumberComboBox" Margin="10 0" SelectedIndex="{Binding SelectedPageIndex}" SelectionChanged="ComboBox_SelectionChanged" ItemsSource="{Binding TopicPage.PageNumbers}" VerticalAlignment="Center"/>
+					<Button Focusable="False" FontSize="14" BorderBrush="Gray" Height="32" CornerRadius="0" HorizontalAlignment="Right" Content="&#11166;" Click="NextPageButton_Click"/>
 				</StackPanel>
 			</DockPanel>
 			<Separator Background="{DynamicResource Separator_Background}" Height="5" Margin="22 0 22 10"/>

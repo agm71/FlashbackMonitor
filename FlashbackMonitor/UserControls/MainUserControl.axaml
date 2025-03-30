@@ -193,7 +193,7 @@
 				<TextBlock FontSize="10" Padding="0 0 3 0" Text="{Binding UpdateStatus}" ToolTip.Tip="{Binding UpdateStatusDescription}" Foreground="#bbb" VerticalAlignment="Center"/>
 				<TextBlock Text="Driftstatus" />
 				<TextBlock Text=" | " />
-				<TextBlock Text="Version: 4.0.0" />
+				<TextBlock Text="Version: 4.0.1" />
 			</StackPanel>
 		</Border>
 	</Grid>
