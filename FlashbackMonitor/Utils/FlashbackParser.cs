@@ -121,21 +121,13 @@ namespace FlashbackMonitor.Utils
                             }
                             else if (node.Name == "b")
                             {
-                                textContainer.TextItems.Add(new TextItem
-                                {
-                                    Kind = TextKind.Bold,
-                                    Text = HttpUtility.HtmlDecode(node.InnerText.Trim()) + " "
-                                });
+                                node.InnerText.SplitIntoTextItems(textContainer, TextKind.Bold);
 
                                 continue;
                             }
                             else if (node.Name == "i")
                             {
-                                textContainer.TextItems.Add(new TextItem
-                                {
-                                    Kind = TextKind.Italic,
-                                    Text = HttpUtility.HtmlDecode(node.InnerText.Trim()) + " "
-                                });
+                                node.InnerText.SplitIntoTextItems(textContainer, TextKind.Italic);
 
                                 continue;
                             }
@@ -720,19 +712,11 @@ namespace FlashbackMonitor.Utils
                             }
                             else if (snode.Name == "b")
                             {
-                                spoilerContainer.TextItems.Add(new SpoilerTextItem
-                                {
-                                    Kind = TextKind.Bold,
-                                    Text = HttpUtility.HtmlDecode(snode.InnerText.Trim()) + " "
-                                });
+                                snode.InnerText.SplitIntoTextItems(spoilerContainer, TextKind.Bold);
                             }
                             else if (snode.Name == "i")
                             {
-                                spoilerContainer.TextItems.Add(new SpoilerTextItem
-                                {
-                                    Kind = TextKind.Italic,
-                                    Text = HttpUtility.HtmlDecode(snode.InnerText.Trim()) + " "
-                                });
+                                snode.InnerText.SplitIntoTextItems(spoilerContainer, TextKind.Italic);
                             }
                             else if (snode.Name == "ul")
                             {
@@ -877,19 +861,11 @@ namespace FlashbackMonitor.Utils
                             }
                             else if (cnode.Name == "b")
                             {
-                                quoteContainer.TextItems.Add(new QuoteTextItem
-                                {
-                                    Kind = TextKind.Bold,
-                                    Text = HttpUtility.HtmlDecode(cnode.InnerText.Trim()) + " "
-                                });
+                                cnode.InnerText.SplitIntoTextItems(quoteContainer, TextKind.Bold);
                             }
                             else if (cnode.Name == "i")
                             {
-                                quoteContainer.TextItems.Add(new QuoteTextItem
-                                {
-                                    Kind = TextKind.Italic,
-                                    Text = HttpUtility.HtmlDecode(cnode.InnerText.Trim()) + " "
-                                });
+                                cnode.InnerText.SplitIntoTextItems(quoteContainer, TextKind.Italic);
                             }
                             else if (cnode.Name == "ul")
                             {

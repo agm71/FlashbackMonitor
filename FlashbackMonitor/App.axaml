@@ -87,7 +87,7 @@
 					<SolidColorBrush x:Key='TopicList_TopicName_Foreground'>#c4c2c3</SolidColorBrush>
 					<SolidColorBrush x:Key='TopicList_Item_Even_Background'>#121212</SolidColorBrush>
 					<SolidColorBrush x:Key='TopicList_Item_Odd_Background'>#121212</SolidColorBrush>
-					<SolidColorBrush x:Key='TopicList_Item_Pinned_Background'>#100E0E</SolidColorBrush>
+					<SolidColorBrush x:Key='TopicList_Item_Pinned_Background'>#100e0e</SolidColorBrush>
 
 					<!--Post-->
 					<SolidColorBrush x:Key='Post_Header_Background'>#121012</SolidColorBrush>
